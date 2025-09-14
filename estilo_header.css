@@ -32,15 +32,21 @@ header {
   position: relative;
 }
 
+#icon_github {
+  width: 32px;   /* largura da imagem */
+  height: auto;  /* mantém a proporção */
+  margin-right: 10px;
+}
+
 #btn-lista {
   width: 45px;   /* largura da imagem */
   height: auto;  /* mantém a proporção */
-  margin-right: 10px;
+  margin-right: 8px;
   cursor: pointer;
 }
 
 #botao_voltar {
-    width: 32px;   /* largura da imagem */
+    width: 30px;   /* largura da imagem */
     height: auto;  /* mantém a proporção */
 }
 

@@ -1,11 +1,17 @@
 
 
 #container {
+    margin-top: 70px;
     display: flex;
     flex-wrap: wrap;             /* permite quebrar linha */
-    gap: 30px;                   /* espaço entre caixas */
+    gap: 50px;                   /* espaço entre caixas */
     justify-content: center;     /* centraliza caixas quando há poucas */
     padding: 35px;
+}
+
+
+.desenhos {
+  border: #555;
 }
 
 h3 {

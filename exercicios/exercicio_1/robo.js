@@ -65,16 +65,66 @@ function pentagonVertices(centerX, centerY) {
 function retanguloVertices() {
     return new Float32Array([
         // Primeiro triângulo
-        -0.6,  -0.25,   // topo esquerdo
-        0.6,  -0.25,   // topo direito
-        0.6, -0.5,   // base direita
-
+        -0.6,  -0.25,   
+        0.6,  -0.25,   
+        0.6, -0.5,   
         // Segundo triângulo
-        -0.6,  -0.25,   // topo esquerdo
-        0.6, -0.5,   // base direita
-        -0.6, -0.5    // base esquerda
+        -0.6,  -0.25,   
+        0.6, -0.5,   
+        -0.6, -0.5    
     ]);
 }
+
+function retanguloSuporte() {
+    return new Float32Array([
+        // Primeiro triângulo
+        0.63,  -0.25,   
+        0.9,  -0.25,   
+        0.9, -0.35,   
+
+        // Segundo triângulo
+        0.63,  -0.25,   
+        0.9, -0.35,  
+        0.63, -0.35    
+    ]);
+}
+
+function retanguloEncosto() {
+    return new Float32Array([
+        // Primeiro triângulo
+        0.4,  -0.22,   
+        0.85,  0.07,   
+        0.85, -0.22,   
+
+        // Segundo triângulo
+        0.4, -0.22,   
+        0.85, 0.07,   
+        0.4, 0.07   
+    ]);
+}
+
+function parabrisa() {
+    return new Float32Array([
+         -0.15,  0.07,
+        -0.6, -0.2,
+         -0.15, -0.2
+    ]);
+}
+
+function retanguloTetoCarro() {
+    return new Float32Array([
+        // Primeiro triângulo
+        -0.13,  0.07,   
+         0.37,   0.07,   
+         0.37,  0.04,   
+
+        // Segundo triângulo
+        -0.13,  0.07,   
+         0.37,  0.04, 
+        -0.13, 0.04   
+    ]);
+}
+
 
 function mainFan() {
     const canvas = document.getElementById('glCanvasCarro');
@@ -99,22 +149,49 @@ function mainFan() {
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-    // Primeiro pentágono
+    // Pentágonos - (Rodas)
     const vertices1 = pentagonVertices(-0.4, -0.7);
     gl.bufferData(gl.ARRAY_BUFFER, vertices1, gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices1.length / 2);
-
-    // Segundo pentágono
     const vertices2 = pentagonVertices(0.4, -0.7);
     gl.bufferData(gl.ARRAY_BUFFER, vertices2, gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices2.length / 2);
 
-    // Retângulo
+    // Retângulo  - Base do Carro
     const vertices3 = retanguloVertices();
     gl.bufferData(gl.ARRAY_BUFFER, vertices3, gl.STATIC_DRAW);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(positionLocation);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    // Suporte Encosto
+    const vertices4 = retanguloSuporte();
+    gl.bufferData(gl.ARRAY_BUFFER, vertices4, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    // Retangulo Encosto Carro
+    const vertices5 = retanguloEncosto();
+    gl.bufferData(gl.ARRAY_BUFFER, vertices5, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+    const vertices6 = parabrisa();
+    gl.bufferData(gl.ARRAY_BUFFER, vertices6, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+
+    const vertices7 = retanguloTetoCarro();
+    gl.bufferData(gl.ARRAY_BUFFER, vertices7, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
 }
 
 window.addEventListener('load', mainFan);
