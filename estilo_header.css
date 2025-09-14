@@ -1,0 +1,72 @@
+
+body {
+  margin: 0; /* remove margem padrão do navegador */
+  padding: 0;
+}
+
+header {
+    height: 42px;
+}
+
+/* Posiciona o header */
+#cabecalho {
+  display: flex;
+  justify-content: space-between; /* texto à esquerda, imagem à direita */
+  align-items: center;
+  padding: 10px 20px;
+  border: 0px;
+  background-color: #004080;
+  color: white;
+  position: relative;
+}
+
+/* Texto do header */
+#cabecalho p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Imagem lateral */
+.img-lateral {
+  position: relative;
+}
+
+#btn-lista {
+  width: 45px;   /* largura da imagem */
+  height: auto;  /* mantém a proporção */
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#botao_voltar {
+    width: 32px;   /* largura da imagem */
+    height: auto;  /* mantém a proporção */
+}
+
+/* Lista escondida por padrão */
+.lista-oculta {
+  display: none;
+  position: absolute;
+  top: 100%; /* logo abaixo da imagem */
+  right: 0;
+  background-color: white;
+  color: black;
+  list-style: none;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 170px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 100; /* garante que fique acima de outros elementos */
+}
+
+/* Itens da lista */
+.lista-oculta li {
+  padding: 5px 5px;
+}
+
+/* Hover nos itens */
+.lista-oculta li:hover {
+  background-color: #f0f0f0;
+}

@@ -1,0 +1,50 @@
+
+.container-caixas {
+  display: flex;
+  flex-wrap: wrap;             /* permite quebrar linha */
+  gap: 20px;                   /* espaço entre caixas */
+  justify-content: center;     /* centraliza caixas quando há poucas */
+  padding: 35px;
+}
+
+.caixa {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  width: 270px; /* largura fixa para cada caixa */
+  height: 240px;                
+  box-sizing: border-box;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;          /* centraliza conteúdo dentro da caixa */
+}
+
+
+.caixa p {
+    font-size: 15px;
+    text-align: justify;
+}
+
+.caixa h3 {
+  margin-top: 0;
+  color: #004080;
+}
+
+.caixa a {
+  display: inline-block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: white;
+  background-color: #004080;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.caixa a:hover {
+  background-color: #0066cc;
+}
+
+.caixa:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}

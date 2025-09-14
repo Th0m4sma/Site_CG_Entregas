@@ -1,0 +1,22 @@
+
+
+#container {
+    display: flex;
+    flex-wrap: wrap;             /* permite quebrar linha */
+    gap: 30px;                   /* espaço entre caixas */
+    justify-content: center;     /* centraliza caixas quando há poucas */
+    padding: 35px;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+}
+
+canvas {
+  border: 1px solid #999;
+  background-color: black;
+}

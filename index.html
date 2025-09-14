@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entregas Computação Gráfica</title>
+  <link rel="stylesheet" href="estilo_header.css">
+  <link rel="stylesheet" href="estilo.css">
+  
+</head>
+<body>
+
+   <header id="cabecalho">
+    <p>COMPUTAÇÃO GRÁFICA - EXERCÍCIOS RESOLVIDOS</p>
+
+    <!-- Imagem lateral direita -->
+    <div class="img-lateral">
+        <img src="imagens/icon_grupo.webp" alt="Perfil" id="btn-lista">
+        <a href="index.html"><img src="imagens/botao_voltar.png" alt="Perfil" id="botao_voltar"></a>
+
+
+        <!-- Lista que vai aparecer ao clicar -->
+        <ul class="lista-oculta" id="lista">
+        <li>
+            Lucas Molinari<br>
+            <a href="mailto:lucas@email.com">lucas@email.com</a>
+        </li>
+        <li>
+            Nicolas<br>
+            <a href="mailto:nicolas@email.com">nicolas@email.com</a>
+        </li>
+        <li>
+            João<br>
+            <a href="mailto:joao@email.com">joao@email.com</a>
+        </li>
+        <li>
+            Thomas Pires Correia<br>
+            <a href="mailto:thomas@email.com">thomas@email.com</a>
+        </li>
+        </ul>
+    </div>
+    </header>
+
+
+  <div class="container-caixas">
+
+    <div class="caixa">
+        <h3>EXERCÍCIO 1</h3>
+        <p>Neste exercício, desenharemos quatro figuras utilizando os modelos apresentados na primeira aula: um robô, uma flor, um carro e um catavento. 
+            Cada figura deve empregar as técnicas e estruturas vistas anteriormente.</p>
+        <a href="exercicios/exercicio_1/exercicio_1.html">Abrir Exercício</a>
+    </div>
+    
+
+    </div>
+</body>
+
+<script>
+    const btn = document.getElementById('btn-lista');
+    const lista = document.getElementById('lista');
+
+    btn.addEventListener('click', () => {
+        // Alterna entre mostrar e esconder
+        if (lista.style.display === 'block') {
+        lista.style.display = 'none';
+        } else {
+        lista.style.display = 'block';
+        }
+    });
+
+    // Opcional: fecha a lista ao clicar fora dela
+    document.addEventListener('click', (e) => {
+        if (!btn.contains(e.target) && !lista.contains(e.target)) {
+        lista.style.display = 'none';
+        }
+    });
+</script>
+
+</html>
+
