@@ -1,113 +1,120 @@
 // Vertex shader source code
-const vertexShaderSource3 = `
+const vertexShaderSourceFan = `
     attribute vec4 a_position;
-    attribute vec4 a_color;
-    varying vec4 v_color;
     void main() {
         gl_Position = a_position;
-        v_color = a_color;
     }
 `;
 
 // Fragment shader source code
-const fragmentShaderSource3 = `
+const fragmentShaderSourceFan = `
     precision mediump float;
-    varying vec4 v_color;
     void main() {
-        gl_FragColor = v_color;
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); 
     }
 `;
 
-function createShader3(gl, type, source) {
+function createShaderFan(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-
+    
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Error compiling shader:', gl.getShaderInfoLog(shader));
+        console.error('Erro compilando shader:', gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
     }
-
     return shader;
 }
 
-function createProgram3(gl, vertexShader, fragmentShader) {
+function createProgramFan(gl, vertexShader, fragmentShader) {
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-
+    
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Error linking program:', gl.getProgramInfoLog(program));
+        console.error('Erro linkando programa:', gl.getProgramInfoLog(program));
         gl.deleteProgram(program);
         return null;
     }
-
     return program;
 }
 
-function squareVertices3(){
+
+
+
+function pentagonVertices(centerX, centerY) {
+    const vertices = [];
+    vertices.push(centerX, centerY); // centro do pentágono
+
+    const radius = 0.15;
+    const numSides = 18;
+
+    for (let i = 0; i <= numSides; i++) {
+        const angle = i * 2 * Math.PI / numSides;
+        const x = centerX + radius * Math.cos(angle); 
+        const y = centerY + radius * Math.sin(angle);
+        vertices.push(x, y);
+    }
+
+    return new Float32Array(vertices);
+}
+
+
+function retanguloVertices() {
     return new Float32Array([
-        -0.5,  0.5,
-         0.5,  0.5,
-         0.5, -0.5,
-        -0.5, -0.5,
-         0.5, -0.5,
-        -0.5,  0.5
+        // Primeiro triângulo
+        -0.6,  -0.25,   // topo esquerdo
+        0.6,  -0.25,   // topo direito
+        0.6, -0.5,   // base direita
+
+        // Segundo triângulo
+        -0.6,  -0.25,   // topo esquerdo
+        0.6, -0.5,   // base direita
+        -0.6, -0.5    // base esquerda
     ]);
 }
 
-function squareColors3(){
-    let color = [Math.random(), Math.random(), Math.random()];
-    let colorValues = [];
-    for(let i=0;i<6;i++){
-        colorValues.push(color[0], color[1], color[2]); // Push individual RGB values
-    }
-    return new Float32Array(colorValues);
-}
-
-function main3() {
-    const canvas = document.getElementById('glCanvas3');
+function mainFan() {
+    const canvas = document.getElementById('glCanvasCarro');
     const gl = canvas.getContext('webgl');
-
+    
     if (!gl) {
-        console.error('WebGL not supported');
+        console.error('WebGL não suportado');
         return;
     }
-
-    const vertexShader = createShader3(gl, gl.VERTEX_SHADER, vertexShaderSource3);
-    const fragmentShader = createShader3(gl, gl.FRAGMENT_SHADER, fragmentShaderSource3);
     
-    const program = createProgram3(gl, vertexShader, fragmentShader);
+    const vertexShader = createShaderFan(gl, gl.VERTEX_SHADER, vertexShaderSourceFan);
+    const fragmentShader = createShaderFan(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceFan);
+    const program = createProgramFan(gl, vertexShader, fragmentShader);
     gl.useProgram(program);
-
-    const positionLocation = gl.getAttribLocation(program, 'a_position');
-    const colorLocation = gl.getAttribLocation(program, 'a_color');
-
-    const VertexBuffer = gl.createBuffer();
-    const ColorBuffer = gl.createBuffer();
     
-    let vertices = [];
-    let colors = [];
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0); // Black background
+    const buffer = gl.createBuffer();
+    const positionLocation = gl.getAttribLocation(program, 'a_position');
+    
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.enableVertexAttribArray(positionLocation);
-    vertices = squareVertices3();
-    gl.bindBuffer(gl.ARRAY_BUFFER, VertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-    gl.enableVertexAttribArray(colorLocation);
-    colors = squareColors3();
-    gl.bindBuffer(gl.ARRAY_BUFFER, ColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+    // Primeiro pentágono
+    const vertices1 = pentagonVertices(-0.4, -0.7);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices1, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices1.length / 2);
 
+    // Segundo pentágono
+    const vertices2 = pentagonVertices(0.4, -0.7);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices2, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices2.length / 2);
+
+    // Retângulo
+    const vertices3 = retanguloVertices();
+    gl.bufferData(gl.ARRAY_BUFFER, vertices3, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
-// Start the application when the page loads
-window.addEventListener('load', main3);
+window.addEventListener('load', mainFan);
