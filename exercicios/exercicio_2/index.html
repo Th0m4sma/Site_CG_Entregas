@@ -48,12 +48,42 @@
     <button id="btnDesenhar">Desenhar</button>
 
 
-   <canvas id="tela" width="300" height="300" style="border:1px solid black;"></canvas>
+   <canvas id="tela" width="180" height="180" style="border:1px solid black;"></canvas>
 
 
 
 </body>
-<script src="linha.js"></script>
+<script>
+const btnDesenhar = document.getElementById("btnDesenhar");
+const formaSelect = document.getElementById("forma");
+
+btnDesenhar.addEventListener("click", () => {
+    const forma = formaSelect.value;
+
+    // Remove qualquer canvas anterior
+    const canvas = document.getElementById("tela");
+    const gl = canvas.getContext("webgl");
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Remove script anterior se existir
+    const oldScript = document.getElementById("formaScript");
+    if (oldScript) oldScript.remove();
+
+    // Cria novo script
+    const script = document.createElement("script");
+    script.id = "formaScript";
+
+    if (forma === "linha") {
+        script.src = "linha.js?cachebust=" + new Date().getTime();
+    } else if (forma === "triangulo") {
+        script.src = "triangulo.js?cachebust=" + new Date().getTime();
+    }
+
+
+    document.body.appendChild(script);
+});
+</script>
+
 <script>
     const btn = document.getElementById('btn-lista');
     const lista = document.getElementById('lista');

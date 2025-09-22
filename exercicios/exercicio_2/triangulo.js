@@ -18,9 +18,6 @@ function bresenham(x0, y0, x1, y1) {
 }
 
 
-
-
-
 // --- WebGL Setup ---
 const canvas = document.getElementById("tela");
 const gl = canvas.getContext("webgl");
@@ -69,7 +66,7 @@ gl.linkProgram(program);
 gl.useProgram(program);
 
 // --- Gerar pontos ---
-const pontos = bresenham(20, 20, 150, 150);
+const pontos = bresenham(10, 10, 150, 80);
 
 // Normalizar coordenadas para [-1,1]
 const width = canvas.width;
