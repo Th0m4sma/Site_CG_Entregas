@@ -1,0 +1,30 @@
+/* Container centralizado na tela */
+.caixa-central {
+    display: flex;
+    flex-direction: column;      /* empilha os elementos verticalmente */
+    justify-content: space-between; /* topo e fundo separados */
+    align-items: center;         /* centraliza horizontalmente */
+    width: 250px;                /* ajuste como quiser */
+    height: 250px;               /* altura do container */
+    padding: 10px;
+    border: 2px solid #004080;
+    border-radius: 10px;
+    background-color: #fff;
+    box-sizing: border-box;
+    position: absolute;          /* para centralizar na tela */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Div que contém o select e botão */
+.caixa-central > div {
+    width: 100%;
+    text-align: center;
+}
+
+/* Canvas no fundo */
+.caixa-central canvas {
+    margin-top: auto;  /* força o canvas para o fundo do container */
+    border: 1px solid black;
+}

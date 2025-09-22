@@ -39,46 +39,38 @@
     </div>
    </header>
 
-   <label for="forma">Escolha uma forma:</label>
-    <select id="forma">
-        <option value="linha">Linha</option>
-        <option value="triangulo">Triângulo</option>
-    </select>
-    <button id="btnDesenhar">Desenhar</button>
+   <section class="caixa-central">
 
-
-   <canvas id="tela" width="180" height="180" style="border:1px solid black;"></canvas>
+       <div>
+           <label for="forma">Escolha uma forma:</label>
+            <select id="forma">
+                <option value="linha">Linha</option>
+                <option value="triangulo">Triângulo</option>
+            </select>
+            <button id="btnDesenhar">Desenhar</button>
+       </div>
+       
+       <canvas id="tela" width="180" height="180" style="border:1px solid black;"></canvas>
+   </section>
 
 </body>
-<script>
-const btnDesenhar = document.getElementById("btnDesenhar");
-const formaSelect = document.getElementById("forma");
+<script type="module">
+    import { desenharLinha } from './linha.js';
+    import { desenharTriangulo } from './triangulo.js';
 
-btnDesenhar.addEventListener("click", () => {
-    const forma = formaSelect.value;
+    const btnDesenhar = document.getElementById("btnDesenhar");
+    const formaSelect = document.getElementById("forma");
 
-    // Remove qualquer canvas anterior
-    const canvas = document.getElementById("tela");
-    const gl = canvas.getContext("webgl");
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    btnDesenhar.addEventListener("click", () => {
+        const forma = formaSelect.value;
 
-    // Remove script anterior se existir
-    const oldScript = document.getElementById("formaScript");
-    if (oldScript) oldScript.remove();
-
-    // Cria novo script
-    const script = document.createElement("script");
-    script.id = "formaScript";
-
-    if (forma === "linha") {
-        script.src = "linha.js?cachebust=" + new Date().getTime();
-    } else if (forma === "triangulo") {
-        script.src = "triangulo.js?cachebust=" + new Date().getTime();
-    }
-
-
-    document.body.appendChild(script);
-});
+        if (forma === "linha") {
+            desenharLinha();
+        } else if (forma === "triangulo") {
+            desenharTriangulo();
+        }
+    });
 </script>
+
 <script src="../../cabecalho.js"></script>
 </html>
