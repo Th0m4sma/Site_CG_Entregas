@@ -17,7 +17,6 @@
         <a href="https://github.com/Th0m4sma/Site_CG_Entregas" target="_blank"><img src="../../imagens/icon_github.png" alt="Perfil" id="icon_github"></a>
         <a href="../../index.html"><img src="../../imagens/botao_voltar.png" alt="Perfil" id="botao_voltar"></a>
 
-
         <!-- Lista que vai aparecer ao clicar -->
         <ul class="lista-oculta" id="lista">
             <li>
@@ -50,8 +49,6 @@
 
    <canvas id="tela" width="180" height="180" style="border:1px solid black;"></canvas>
 
-
-
 </body>
 <script>
 const btnDesenhar = document.getElementById("btnDesenhar");
@@ -83,25 +80,5 @@ btnDesenhar.addEventListener("click", () => {
     document.body.appendChild(script);
 });
 </script>
-
-<script>
-    const btn = document.getElementById('btn-lista');
-    const lista = document.getElementById('lista');
-
-    btn.addEventListener('click', () => {
-        // Alterna entre mostrar e esconder
-        if (lista.style.display === 'block') {
-        lista.style.display = 'none';
-        } else {
-        lista.style.display = 'block';
-        }
-    });
-
-    // Opcional: fecha a lista ao clicar fora dela
-    document.addEventListener('click', (e) => {
-        if (!btn.contains(e.target) && !lista.contains(e.target)) {
-        lista.style.display = 'none';
-        }
-    });
-</script>
+<script src="../../cabecalho.js"></script>
 </html>
