@@ -142,7 +142,7 @@ export function desenharLinha() {
                     colorVector = [0.0, 0.0, 0.0]; // preto
                     break;
                 case '5':
-                    colorVector = [1.0, 1.0, 1.0]; // branco
+                    colorVector = [1.0, 1.0, 0.8]; // branco
                     break;
                 case '6':
                     colorVector = [1.0, 1.0, 0.0]; // amarelo
@@ -164,15 +164,15 @@ export function desenharLinha() {
         }else if(esperandoEspessura){
             switch(event.key) {
                 case '1': pointSize = 1.0; break;
-                case '2': pointSize = 2.0; break;
-                case '3': pointSize = 3.0; break;
-                case '4': pointSize = 4.0; break;
-                case '5': pointSize = 5.0; break;
-                case '6': pointSize = 6.0; break;
-                case '7': pointSize = 7.0; break;
-                case '8': pointSize = 8.0; break;
-                case '9': pointSize = 9.0; break;
-                case '0': pointSize = 10.0; break;
+                case '2': pointSize = 3.0; break;
+                case '3': pointSize = 6.0; break;
+                case '4': pointSize = 8.0; break;
+                case '5': pointSize = 10.0; break;
+                case '6': pointSize = 12.0; break;
+                case '7': pointSize = 14.0; break;
+                case '8': pointSize = 16.0; break;
+                case '9': pointSize = 18.0; break;
+                case '0': pointSize = 20.0; break;
             }      
             esperandoEspessura = false;
             gl.uniform1f(pointSizeLocation, pointSize);
