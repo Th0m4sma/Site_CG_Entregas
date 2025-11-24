@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Exercício 2 - Janela e Viewport</title>
+  <style>
+    canvas {
+      border: 1px solid #333;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Transformação de Janela → Viewport (Exercício 2)</h2>
+
+  <canvas id="viewport" width="500" height="500"></canvas>
+
+  <script>
+    const ctx = document.getElementById('viewport').getContext('2d');
+
+    function worldToViewport(x, y, xwmin, ywmin, xwmax, ywmax, xvmin, yvmin, xvmax, yvmax) {
+      const xv = xvmin + (x - xwmin) * (xvmax - xvmin) / (xwmax - xwmin);
+      const yv = yvmin + (y - ywmin) * (yvmax - yvmin) / (ywmax - ywmin);
+      return { xv, yv };
+    }
+
+    const triangle = [
+      { x: 10, y: 10 },
+      { x: 20, y: 50 },
+      { x: 30, y: 10 }
+    ];
+
+    const viewport = {
+      xvmin: 0,
+      yvmin: 0,
+      xvmax: 5,
+      yvmax: 10
+    };
+
+    const windows = [
+      { xwmin: 0, ywmin: 0, xwmax: 100, ywmax: 200 },
+      { xwmin: 0, ywmin: 0, xwmax: 200, ywmax: 100 },
+      { xwmin: 0, ywmin: 0, xwmax: 1000, ywmax: 60 }
+    ];
+
+    // Desenha um triângulo dado um conjunto de pontos transformados
+    function drawTriangle(points, color, offsetX) {
+      ctx.beginPath();
+      ctx.moveTo(points[0].xv * 40 + offsetX, 500 - points[0].yv * 40);
+      ctx.lineTo(points[1].xv * 40 + offsetX, 500 - points[1].yv * 40);
+      ctx.lineTo(points[2].xv * 40 + offsetX, 500 - points[2].yv * 40);
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.stroke();
+    }
+
+    // Cores para cada janela
+    const colors = ["red", "green", "blue"];
+
+    windows.forEach((win, i) => {
+      const points = triangle.map(p => worldToViewport(
+        p.x, p.y,
+        win.xwmin, win.ywmin, win.xwmax, win.ywmax,
+        viewport.xvmin, viewport.yvmin, viewport.xvmax, viewport.yvmax
+      ));
+      drawTriangle(points, colors[i], i * 200 + 50);
+    });
+  </script>
+</body>
+</html>

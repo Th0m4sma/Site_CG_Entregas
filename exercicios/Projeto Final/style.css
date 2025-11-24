@@ -1,0 +1,32 @@
+body {
+    margin: 20px;
+    padding: 0;
+    background-color: white;
+}
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+table {
+    border-collapse: collapse;
+    margin: 0 auto;
+    border: 2px solid #ddd;
+}
+td {
+    border: 1px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    vertical-align: top;
+    background-color: #f9f9f9;
+}
+h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 14px;
+}
+canvas {
+    border: 1px solid #999;
+    background-color: black;
+}
