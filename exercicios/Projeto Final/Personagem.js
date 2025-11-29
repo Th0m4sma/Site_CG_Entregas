@@ -317,7 +317,7 @@ function drawCube(cube, matrix) {
     gl.drawArrays(gl.TRIANGLES, 0, 36);
 }
 
-// Desenhar o personagem Minecraft
+// Desenhar o personagem estilo     Minecraft (possível personalização no futuro)
 function drawMinecraftCharacter() {
     const tempMatrix = new Matrix4();
     
