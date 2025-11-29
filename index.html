@@ -1,111 +1,87 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computação Gráfica - Projeto Final</title>
-    <link rel="stylesheet" href="../../estilo_header.css">
+    <title>Hoquei Mesa</title>
+
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
+            background-color: rgb(225, 71, 71);
             font-family: Arial, sans-serif;
         }
 
-        #webgl-canvas {
+        /* Canvas atrás ocupando 100% */
+        #glCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            display: block;
-            z-index: 1;
+            z-index: 0; /* fica atrás */
+            background-color: black;
         }
 
-        header {
-            position: relative;
-            z-index: 100;
-        }
-
-        .info {
+        /* --- LOGIN CENTRALIZADO --- */
+        #loginBox {
             position: fixed;
-            top: 80px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            z-index: 100;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            z-index: 10; /* acima do canvas */
+            text-align: center;
         }
 
-        .info h3 {
-            margin: 0 0 10px 0;
+        #loginBox input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
             font-size: 16px;
         }
 
-        .info p {
-            margin: 5px 0;
+        #loginBox button {
+            width: 95%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(225, 71, 71);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #loginBox button:hover {
+            background-color: rgb(200, 40, 40);
         }
     </style>
 </head>
 <body>
-    <canvas id="webgl-canvas"></canvas>
 
-    <header id="cabecalho">
-        <p>COMPUTAÇÃO GRÁFICA - PROJETO FINAL</p>
+    <!-- Canvas atrás -->
+    <canvas id="glCanvas"></canvas>
 
-        <div class="img-lateral">
-            <img src="../../imagens/icon_grupo.webp" alt="Perfil" id="btn-lista">
-            <a href="https://github.com/Th0m4sma/Site_CG_Entregas" target="_blank">
-                <img src="../../imagens/icon_github.png" alt="GitHub" id="icon_github">
-            </a>
-            <a href="../../index.html">
-                <img src="../../imagens/botao_voltar.png" alt="Voltar" id="botao_voltar">
-            </a>
-
-            <ul class="lista-oculta" id="lista">
-                <li>
-                    Lucas Molinari<br>
-                    <a href="mailto:l.molinari@unifesp.br">l.molinari@unifesp.br</a>
-                </li>
-                <li>
-                    Nicolas Freitas<br>
-                    <a href="mailto:n.freitas@unifesp.br">n.freitas@unifesp.br</a>
-                </li>
-                <li>
-                    João Victor Rocha<br>
-                    <a href="mailto:Jv.rocha@unifesp.br">Jv.rocha@unifesp.br</a>
-                </li>
-                <li>
-                    Thomas Pires Correia<br>
-                    <a href="mailto:correia.thomas@unifesp.br">correia.thomas@unifesp.br</a>
-                </li>
-            </ul>
-        </div>
-    </header>
-
-    <div class="info">
-        <h3>Personagem Estilo Minecraft</h3>
-        <p><strong>Câmera:</strong> <span id="camera-name">Visão Geral</span></p>
-        <p><em>Teclas 1-5 para trocar câmera</em></p>
+    <!-- Caixa de login -->
+    <div id="loginBox">
+        <h2>Login</h2>
+        <input type="text" placeholder="Usuário">
+        <input type="password" placeholder="Senha">
+        <button>Entrar</button>
     </div>
 
-    <script src="Personagem.js"></script>
-    <script>
-        // Garantir que cabecalho.js só execute após DOM carregar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                const script = document.createElement('script');
-                script.src = '../../cabecalho.js';
-                document.body.appendChild(script);
-            });
-        } else {
-            const script = document.createElement('script');
-            script.src = '../../cabecalho.js';
-            document.body.appendChild(script);
-        }
-    </script>
+    <script src="m4.js"></script>
+    <script src="func_js/pagina_inicial.js"></script>
+
 </body>
 </html>

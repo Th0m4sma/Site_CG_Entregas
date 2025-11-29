@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computação Gráfica - Projeto Final</title>
+    <link rel="stylesheet" href="../../estilo_header.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            z-index: 1;
+        }
+
+        header {
+            position: relative;
+            z-index: 100;
+        }
+
+        .info {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .info h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webgl-canvas"></canvas>
+
+    <header id="cabecalho">
+        <p>COMPUTAÇÃO GRÁFICA - PROJETO FINAL</p>
+
+        <div class="img-lateral">
+            <img src="../../imagens/icon_grupo.webp" alt="Perfil" id="btn-lista">
+            <a href="https://github.com/Th0m4sma/Site_CG_Entregas" target="_blank">
+                <img src="../../imagens/icon_github.png" alt="GitHub" id="icon_github">
+            </a>
+            <a href="../../index.html">
+                <img src="../../imagens/botao_voltar.png" alt="Voltar" id="botao_voltar">
+            </a>
+
+            <ul class="lista-oculta" id="lista">
+                <li>
+                    Lucas Molinari<br>
+                    <a href="mailto:l.molinari@unifesp.br">l.molinari@unifesp.br</a>
+                </li>
+                <li>
+                    Nicolas Freitas<br>
+                    <a href="mailto:n.freitas@unifesp.br">n.freitas@unifesp.br</a>
+                </li>
+                <li>
+                    João Victor Rocha<br>
+                    <a href="mailto:Jv.rocha@unifesp.br">Jv.rocha@unifesp.br</a>
+                </li>
+                <li>
+                    Thomas Pires Correia<br>
+                    <a href="mailto:correia.thomas@unifesp.br">correia.thomas@unifesp.br</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="info">
+        <h3>Personagem Estilo Minecraft</h3>
+        <p><strong>Câmera:</strong> <span id="camera-name">Visão Geral</span></p>
+        <p><em>Teclas 1-5 para trocar câmera</em></p>
+    </div>
+
+    <script src="Personagem.js"></script>
+    <script>
+        // Garantir que cabecalho.js só execute após DOM carregar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const script = document.createElement('script');
+                script.src = '../../cabecalho.js';
+                document.body.appendChild(script);
+            });
+        } else {
+            const script = document.createElement('script');
+            script.src = '../../cabecalho.js';
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>
