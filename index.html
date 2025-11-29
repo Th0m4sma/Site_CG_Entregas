@@ -1,97 +1,87 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entregas Computação Gráfica</title>
-  <link rel="stylesheet" href="estilo_header.css">
-  <link rel="stylesheet" href="estilo.css">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoquei Mesa</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgb(225, 71, 71);
+            font-family: Arial, sans-serif;
+        }
+
+        /* Canvas atrás ocupando 100% */
+        #glCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0; /* fica atrás */
+            background-color: black;
+        }
+
+        /* --- LOGIN CENTRALIZADO --- */
+        #loginBox {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            z-index: 10; /* acima do canvas */
+            text-align: center;
+        }
+
+        #loginBox input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+        }
+
+        #loginBox button {
+            width: 95%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(225, 71, 71);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #loginBox button:hover {
+            background-color: rgb(200, 40, 40);
+        }
+    </style>
 </head>
 <body>
 
-   <header id="cabecalho">
-    <p>COMPUTAÇÃO GRÁFICA - EXERCÍCIOS RESOLVIDOS</p>
+    <!-- Canvas atrás -->
+    <canvas id="glCanvas"></canvas>
 
-    <!-- Imagem lateral direita -->
-    <div class="img-lateral">
-        <img src="imagens/icon_grupo.webp" alt="Perfil" id="btn-lista">
-        <a href="https://github.com/Th0m4sma/Site_CG_Entregas" target="_blank"><img src="imagens/icon_github.png" alt="Perfil" id="icon_github"></a>
-        <a href="index.html"><img src="imagens/botao_voltar.png" alt="Perfil" id="botao_voltar"></a>
-
-        <!-- Lista que vai aparecer ao clicar -->
-        <ul class="lista-oculta" id="lista">
-            <li>
-                Lucas Molinari<br>
-                <a href="l.molinari@unifesp.br">l.molinari@unifesp.br</a>
-            </li>
-            <li>
-                Nicolas Freitas<br>
-                <a href="n.freitas@unifesp.br">n.freitas@unifesp.br</a>
-            </li>
-            <li>
-                João Victor Rocha<br>
-                <a href="Jv.rocha@unifesp.br">Jv.rocha@unifesp.br</a>
-            </li>
-            <li>
-                Thomas Pires Correia<br>
-                <a href="mailto:correia.thomas@unifesp.br">correia.thomas@unifesp.br</a>
-            </li>
-        </ul>
+    <!-- Caixa de login -->
+    <div id="loginBox">
+        <h2>Login</h2>
+        <input type="text" placeholder="Usuário">
+        <input type="password" placeholder="Senha">
+        <button>Entrar</button>
     </div>
-    </header>
 
+    <script src="m4.js"></script>
+    <script src="func_js/pagina_inicial.js"></script>
 
-  <div class="container-caixas">
-
-        <div class="caixa">
-            
-                <h3>EXERCÍCIO 1</h3>
-                <p>
-                    Neste exercício, desenharemos quatro figuras utilizando os modelos apresentados na primeira aula: um robô, uma flor, um carro e um catavento.
-                    Cada figura deve empregar as técnicas e estruturas estudadas, como <code>GL_TRIANGLES</code>, <code>GL_TRIANGLE_FAN</code>, entre outras.
-                    O objetivo é aplicar os conceitos aprendidos e compreender melhor o pipeline de construção de imagens utilizando WebGL.
-                </p>
-            
-            <a href="exercicios/exercicio_1/index.html">Abrir Exercício</a>
-        </div>
-
-        <div class="caixa">
-            
-                <h3>EXERCÍCIO 2</h3>
-                <p>
-                    Neste exercício, desenharemos quatro figuras utilizando apenas os pontos: um robô, uma flor, um carro e um catavento.
-                    Cada figura deve empregar os pontos para formar linhas, triângulos e outras estruturas geométricas estudadas.
-                    O objetivo é aplicar os conceitos aprendidos e compreender melhor o pipeline de construção de imagens utilizando WebGL com <code>GL_POINTS</code>.
-                </p>
-            
-            <a href="exercicios/exercicio_2/index.html">Abrir Exercício</a>
-        </div>
-
-        <div class="caixa">
-            
-                <h3>EXERCÍCIO 3</h3>
-                <p>
-                    A partir de um clique do mouse, será traçada uma circunferência centrada na posição clicada, utilizando apenas coordenadas inteiras para identificar os pontos que compõem seu contorno. 
-                    O objetivo é compreender como o algoritmo de Bresenham permite aproximar curvas suaves usando apenas pontos discretos, o que é essencial para a renderização gráfica em contextos como WebGL. 
-                </p>
-
-            <a href="exercicios/exercicio_3/index.html">Abrir Exercício</a>
-        </div>
-
-
-        <div class="caixa">
-            
-                <h4>Projeto Final</h4>
-                <p>
-                </p>
-            
-            <a href="exercicios/Projeto Final/index.html">Abrir Projeto</a>
-        </div>
-
-    </div>
 </body>
-
-<script src="cabecalho.js"></script>
 </html>
-
