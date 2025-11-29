@@ -154,10 +154,7 @@ function main() {
     const colorLocation = gl.getAttribLocation(program, 'a_color');
 
     const VertexBuffer = gl.createBuffer();
-    let cubeVertices = [];
-
     const ColorBuffer = gl.createBuffer();
-    let cubeColors = [];
     
     const modelViewMatrixUniformLocation = gl.getUniformLocation(program,'u_modelViewMatrix');
     const viewingMatrixUniformLocation = gl.getUniformLocation(program,'u_viewingMatrix');
@@ -166,8 +163,6 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    let modelViewMatrix = m4.identity();
 
 
 
