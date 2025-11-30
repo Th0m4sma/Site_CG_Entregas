@@ -43,7 +43,7 @@
         }
 
         #loginBox input {
-            width: 90%;
+            width: 89%;
             padding: 10px;
             margin: 8px 0;
             border-radius: 6px;
@@ -65,6 +65,15 @@
         #loginBox button:hover {
             background-color: rgb(200, 40, 40);
         }
+
+        #loginBox select {
+            width: 95%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -75,13 +84,29 @@
     <!-- Caixa de login -->
     <div id="loginBox">
         <h2>Login</h2>
-        <input type="text" placeholder="Usuário">
-        <input type="password" placeholder="Senha">
-        <button>Entrar</button>
+        <input type="text" placeholder="Nome">
+
+        <select id="modoSelect">
+            <option value="1x1" selected>1 x 1</option>
+            <option value="1xBot">1 x Bot</option>
+        </select>
+
+        <button id="entrarBtn">Entrar</button>
     </div>
 
     <script src="m4.js"></script>
     <script src="func_js/pagina_inicial.js"></script>
+
+    <script>
+        document.getElementById("entrarBtn").addEventListener("click", function() {
+            const modo = document.getElementById("modoSelect").value;
+            if (modo === "1x1") {
+                window.location.href = "jogo.html";
+            } else if (modo === "1xBot") {
+                alert("Modo 1xBot ainda não implementado!");
+            }
+        });
+    </script>
 
 </body>
 </html>
