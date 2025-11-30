@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computação Gráfica - Projeto Final</title>
-    <link rel="stylesheet" href="../../estilo_header.css">
+    <link rel="stylesheet" href="./atividades_backup/estilo_header.css">
     <style>
         body {
             margin: 0;
@@ -57,12 +57,12 @@
         <p>COMPUTAÇÃO GRÁFICA - PROJETO FINAL</p>
 
         <div class="img-lateral">
-            <img src="../../imagens/icon_grupo.webp" alt="Perfil" id="btn-lista">
+            <img src="./atividades_backup/imagens_backup/icon_grupo.webp" alt="Perfil" id="btn-lista">
             <a href="https://github.com/Th0m4sma/Site_CG_Entregas" target="_blank">
-                <img src="../../imagens/icon_github.png" alt="GitHub" id="icon_github">
+                <img src="./atividades_backup/imagens_backup/icon_github.png" alt="GitHub" id="icon_github">
             </a>
             <a href="../../index.html">
-                <img src="../../imagens/botao_voltar.png" alt="Voltar" id="botao_voltar">
+                <img src="./atividades_backup/imagens_backup/botao_voltar.png" alt="Voltar" id="botao_voltar">
             </a>
 
             <ul class="lista-oculta" id="lista">
@@ -92,20 +92,14 @@
         <p><em>Teclas 1-5 para trocar câmera</em></p>
     </div>
 
-    <script src="Personagem.js"></script>
+    <script src="func_js/Personagem.js"></script>
     <script>
         // Garantir que cabecalho.js só execute após DOM carregar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                const script = document.createElement('script');
-                script.src = '../../cabecalho.js';
-                document.body.appendChild(script);
-            });
-        } else {
+        document.addEventListener('DOMContentLoaded', () => {
             const script = document.createElement('script');
-            script.src = '../../cabecalho.js';
+            script.src = './atividades_backup/cabecalho.js';
             document.body.appendChild(script);
-        }
+        });
     </script>
 </body>
 </html>
