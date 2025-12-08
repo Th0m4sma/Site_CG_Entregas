@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Final - Modular</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            z-index: 1;
+        }
+
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .info h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webgl-canvas"></canvas>
+
+    <div class="info">
+        <h3>Projeto Final - Air Hockey</h3>
+        <p><strong>Câmera:</strong> <span id="camera-name">Visão Geral</span></p>
+        <p><em>Teclas 1-5 para trocar câmera</em></p>
+    </div>
+
+    <!-- Carregar como módulo ES6 -->
+    <script type="module" src="func_js/objetos.js"></script>
+</body>
+</html>

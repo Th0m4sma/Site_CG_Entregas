@@ -1,3 +1,11 @@
+// ========== ARQUIVO PRINCIPAL - IMPORTA TODOS OS OBJETOS ==========
+
+// Importar módulos dos objetos
+import { drawMinecraftCharacter } from './personagemModule.js';
+import { drawPaddles, drawCylindricObject as drawCylindricObjectPaddle } from './bastao.js';
+import { drawPuck, updatePuckPhysics } from './disco.js';
+import { drawAirHockeyTable } from './mesaAirHockey.js';
+
 // Variáveis globais
 let gl;
 let program;
@@ -5,19 +13,6 @@ let canvas;
 let currentCamera = 0;
 let animationAngle = 0;
 let animationSpeed = 0.05;
-
-// Variáveis do disco (puck)
-let puckX = 0;
-let puckZ = 2;
-let puckVelocityX = 0.03;
-let puckVelocityZ = 0.02;
-const puckScaledRadius = 0.15; // raio do disco após escala (0.05 * 3)
-
-// Limites da mesa (ajustar conforme a mesa real)
-const tableMinX = -1.8;
-const tableMaxX = 1.8;
-const tableMinZ = -1.1;
-const tableMaxZ = 1.1;
 
 // Matrizes
 let modelMatrix;
@@ -330,9 +325,13 @@ function drawCube(cube, matrix) {
     gl.drawArrays(gl.TRIANGLES, 0, 36);
 }
 
-// Desenhar o personagem estilo     Minecraft (possível personalização no futuro)
-function drawMinecraftCharacter() {
-    const tempMatrix = new Matrix4();
+// Wrapper para desenhar objetos cilíndricos
+function drawCylindricObject(cylindricObject, matrix) {
+    drawCylindricObjectPaddle(cylindricObject, matrix, gl, program);
+}
+
+// Configurar câmeras
+function setupCamera(cameraIndex) {
     
     // Sem rotação - personagem parado
     tempMatrix.setIdentity();

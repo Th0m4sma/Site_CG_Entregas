@@ -8,12 +8,12 @@ let animationSpeed = 0.05;
 
 // Variáveis do disco (puck)
 let puckX = 0;
-let puckZ = 2;
+let puckZ = 0;
 let puckVelocityX = 0.03;
 let puckVelocityZ = 0.02;
-const puckScaledRadius = 0.15; // raio do disco após escala (0.05 * 3)
+const puckRadius = 0.15;
 
-// Limites da mesa (ajustar conforme a mesa real)
+// Limites da mesa (área de jogo)
 const tableMinX = -1.8;
 const tableMaxX = 1.8;
 const tableMinZ = -1.1;
@@ -312,296 +312,7 @@ function createCube(r, g, b) {
     return { vertices, colors };
 }
 
-// Função para desenhar um cubo
-function drawCube(cube, matrix) {
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cube.vertices, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Position);
-
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cube.colors, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Color, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Color);
-
-    gl.uniformMatrix4fv(program.u_ModelMatrix, false, matrix.elements);
-    gl.drawArrays(gl.TRIANGLES, 0, 36);
-}
-
-// Desenhar o personagem estilo     Minecraft (possível personalização no futuro)
-function drawMinecraftCharacter() {
-    const tempMatrix = new Matrix4();
-    
-    // Sem rotação - personagem parado
-    tempMatrix.setIdentity();
-    
-    // Cabeça (cubo maior, marrom - mesma cor dos braços)
-    const headMatrix = new Matrix4();
-    headMatrix.set(tempMatrix);
-    headMatrix.translate(0, 1.5, 0);
-    headMatrix.scale(0.8, 0.8, 0.8);
-    const head = createCube(0.7, 0.5, 0.3);
-    drawCube(head, headMatrix);
-
-    // Olho esquerdo (preto)
-    const leftEyeMatrix = new Matrix4();
-    leftEyeMatrix.set(tempMatrix);
-    leftEyeMatrix.translate(-0.15, 1.65, 0.41);
-    leftEyeMatrix.scale(0.12, 0.12, 0.05);
-    const leftEye = createCube(0.0, 0.0, 0.0);
-    drawCube(leftEye, leftEyeMatrix);
-
-    // Olho direito (preto)
-    const rightEyeMatrix = new Matrix4();
-    rightEyeMatrix.set(tempMatrix);
-    rightEyeMatrix.translate(0.15, 1.65, 0.41);
-    rightEyeMatrix.scale(0.12, 0.12, 0.05);
-    const rightEye = createCube(0.0, 0.0, 0.0);
-    drawCube(rightEye, rightEyeMatrix);
-
-    // Boca (linha horizontal preta)
-    const mouthMatrix = new Matrix4();
-    mouthMatrix.set(tempMatrix);
-    mouthMatrix.translate(0, 1.35, 0.41);
-    mouthMatrix.scale(0.3, 0.06, 0.05);
-    const mouth = createCube(0.0, 0.0, 0.0);
-    drawCube(mouth, mouthMatrix);
-
-    // Corpo (retângulo vertical, verde)
-    const bodyMatrix = new Matrix4();
-    bodyMatrix.set(tempMatrix);
-    bodyMatrix.translate(0, 0.4, 0);
-    bodyMatrix.scale(0.8, 1.2, 0.4);
-    const body = createCube(0.2, 0.8, 0.3);
-    drawCube(body, bodyMatrix);
-
-    // Braço direito (marrom)
-    const rightArmMatrix = new Matrix4();
-    rightArmMatrix.set(tempMatrix);
-    rightArmMatrix.translate(0.6, 0.6, 0);
-    rightArmMatrix.translate(0, -0.4, 0);
-    rightArmMatrix.scale(0.3, 0.9, 0.3);
-    const rightArm = createCube(0.7, 0.5, 0.3);
-    drawCube(rightArm, rightArmMatrix);
-
-    // Braço esquerdo (marrom)
-    const leftArmMatrix = new Matrix4();
-    leftArmMatrix.set(tempMatrix);
-    leftArmMatrix.translate(-0.6, 0.6, 0);
-    leftArmMatrix.translate(0, -0.4, 0);
-    leftArmMatrix.scale(0.3, 0.9, 0.3);
-    const leftArm = createCube(0.7, 0.5, 0.3);
-    drawCube(leftArm, leftArmMatrix);
-
-    // Perna direita (azul escuro)
-    const rightLegMatrix = new Matrix4();
-    rightLegMatrix.set(tempMatrix);
-    rightLegMatrix.translate(0.25, -0.3, 0);
-    rightLegMatrix.translate(0, -0.5, 0);
-    rightLegMatrix.scale(0.3, 0.9, 0.3);
-    const rightLeg = createCube(0.2, 0.3, 0.7);
-    drawCube(rightLeg, rightLegMatrix);
-
-    // Perna esquerda (azul escuro)
-    const leftLegMatrix = new Matrix4();
-    leftLegMatrix.set(tempMatrix);
-    leftLegMatrix.translate(-0.25, -0.3, 0);
-    leftLegMatrix.translate(0, -0.5, 0);
-    leftLegMatrix.scale(0.3, 0.9, 0.3);
-    const leftLeg = createCube(0.2, 0.3, 0.7);
-    drawCube(leftLeg, leftLegMatrix);
-}
-
-// ========== FUNÇÕES DO BASTÃO ==========
-
-// Função para criar os vértices de um cilindro 3D
-function createCylinderVertices(radius, height, segments) {
-    let vertices = [];
-    let h = height / 2;
-    
-    for (let i = 0; i < segments; i++) {
-        let angle1 = (i / segments) * Math.PI * 2;
-        let angle2 = ((i + 1) / segments) * Math.PI * 2;
-        
-        let x1 = Math.cos(angle1) * radius;
-        let z1 = Math.sin(angle1) * radius;
-        let x2 = Math.cos(angle2) * radius;
-        let z2 = Math.sin(angle2) * radius;
-        
-        // Tampa superior
-        vertices.push(0, h, 0);
-        vertices.push(x2, h, z2);
-        vertices.push(x1, h, z1);
-        
-        // Tampa inferior
-        vertices.push(0, -h, 0);
-        vertices.push(x1, -h, z1);
-        vertices.push(x2, -h, z2);
-        
-        // Laterais
-        vertices.push(x1, h, z1);
-        vertices.push(x2, h, z2);
-        vertices.push(x1, -h, z1);
-        
-        vertices.push(x1, -h, z1);
-        vertices.push(x2, h, z2);
-        vertices.push(x2, -h, z2);
-    }
-    
-    return vertices;
-}
-
-// Função para criar um bastão com base larga e cabo fino
-function createCylindricVertices(baseRadius, baseHeight, handleRadius, handleHeight, segments) {
-    let vertices = [];
-    
-    // Criar base (cilindro largo)
-    let baseCylinder = createCylinderVertices(baseRadius, baseHeight, segments);
-    for (let i = 0; i < baseCylinder.length; i++) {
-        vertices.push(baseCylinder[i]);
-    }
-    
-    // Criar cabo (cilindro fino em cima da base)
-    let handleCylinder = createCylinderVertices(handleRadius, handleHeight, segments);
-    let yOffset = (baseHeight + handleHeight) / 2;
-    
-    for (let i = 0; i < handleCylinder.length; i += 3) {
-        vertices.push(
-            handleCylinder[i], 
-            handleCylinder[i + 1] + yOffset, 
-            handleCylinder[i + 2]
-        );
-    }
-    
-    return new Float32Array(vertices);
-}
-
-// Função para criar cores para o bastão (base e cabo com cores diferentes)
-function createCylindricColors(baseColor, handleColor, segments) {
-    let colors = [];
-    let baseVertices = segments * 12;
-    let handleVertices = segments * 12;
-    
-    // Cor da base
-    for (let i = 0; i < baseVertices; i++) {
-        colors.push(baseColor[0], baseColor[1], baseColor[2]);
-    }
-    
-    // Cor do cabo
-    for (let i = 0; i < handleVertices; i++) {
-        colors.push(handleColor[0], handleColor[1], handleColor[2]);
-    }
-    
-    return new Float32Array(colors);
-}
-
-// Função para criar um objeto bastão completo
-function createPaddle(baseRadius, baseHeight, handleRadius, handleHeight, segments, baseColor, handleColor) {
-    const vertices = createCylindricVertices(baseRadius, baseHeight, handleRadius, handleHeight, segments);
-    const colors = createCylindricColors(baseColor, handleColor, segments);
-    return { vertices, colors };
-}
-
-// Função para desenhar um bastão
-function drawCylindricObject(cylindricObject, matrix) {
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cylindricObject.vertices, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Position);
-
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cylindricObject.colors, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Color, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Color);
-
-    gl.uniformMatrix4fv(program.u_ModelMatrix, false, matrix.elements);
-    gl.drawArrays(gl.TRIANGLES, 0, cylindricObject.vertices.length / 3);
-}
-
-// ========== DESENHAR BASTÕES NA CENA ==========
-function drawPaddles() {
-    const tempMatrix = new Matrix4();
-    tempMatrix.setIdentity();
-    
-    // Criar bastãos
-    const paddle1 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [1, 0, 0], [0.3, 0.3, 0.3]);
-    const paddle2 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0, 0, 1], [0.3, 0.3, 0.3]);
-    
-    // Bastão à direita do personagem
-    const paddle1Matrix = new Matrix4();
-    paddle1Matrix.set(tempMatrix);
-    paddle1Matrix.translate(2, 0.2, 0);
-    paddle1Matrix.rotate(animationAngle * 50, 0, 1, 0);
-    paddle1Matrix.scale(1.5, 1.5, 1.5);
-    drawCylindricObject(paddle1, paddle1Matrix);
-    
-    // Bastão à esquerda do personagem
-    const paddle2Matrix = new Matrix4();
-    paddle2Matrix.set(tempMatrix);
-    paddle2Matrix.translate(-2, 0.2, 0);
-    paddle2Matrix.rotate(-animationAngle * 50, 0, 1, 0);
-    paddle2Matrix.scale(1.5, 1.5, 1.5);
-    drawCylindricObject(paddle2, paddle2Matrix);
-}
-// ========== FIM DAS FUNÇÕES DO BASTÃO ==========
-
-// ========== FUNÇÕES DO DISCO ==========
-
-// Função para criar o disco
-function createPuck(radius, height, segments, r, g, b) {
-    const vertices = createCylindricVertices(radius, height, 0, 0, segments);
-    const colors = createCylindricColors([r, g, b], [r, g, b], segments);
-    return { vertices, colors };
-}
-
-// Função para desenhar o disco
-function drawPuck() {
-    const tempMatrix = new Matrix4();
-    tempMatrix.setIdentity();
-    
-    const disco = createPuck(0.05, 0.02, 24, 0, 1, 0);
-    
-    const discoMatrix = new Matrix4();
-    discoMatrix.set(tempMatrix);
-    discoMatrix.translate(puckX, 0.1, puckZ);
-    discoMatrix.rotate(animationAngle * 100, 0, 1, 0);
-    discoMatrix.scale(3, 3, 3);
-    drawCylindricObject(disco, discoMatrix);
-}
-
-// Atualizar física do disco
-function updatePuckPhysics() {
-    // Atualizar posição
-    puckX += puckVelocityX;
-    puckZ += puckVelocityZ;
-
-    // Verificar colisão com bordas laterais (esquerda/direita)
-    if (puckX - puckScaledRadius <= tableMinX) {
-        puckX = tableMinX + puckScaledRadius;
-        puckVelocityX = Math.abs(puckVelocityX); // Inverte para direita
-    } else if (puckX + puckScaledRadius >= tableMaxX) {
-        puckX = tableMaxX - puckScaledRadius;
-        puckVelocityX = -Math.abs(puckVelocityX); // Inverte para esquerda
-    }
-
-    // Verificar colisão com bordas superior/inferior
-    if (puckZ - puckScaledRadius <= tableMinZ) {
-        puckZ = tableMinZ + puckScaledRadius;
-        puckVelocityZ = Math.abs(puckVelocityZ); // Inverte para cima
-    } else if (puckZ + puckScaledRadius >= tableMaxZ) {
-        puckZ = tableMaxZ - puckScaledRadius;
-        puckVelocityZ = -Math.abs(puckVelocityZ); // Inverte para baixo
-    }
-}
-// ========== FIM FUNÇÕES DO DISCO ==========
-
-// ========== FUNÇÕES DA MESA DE AIR HOCKEY ==========
-
-// Função para criar um cilindro (para círculo central e pernas da mesa)
+// Função para criar um cilindro (para as pernas da mesa)
 function createCylinder(r, g, b, segments = 16) {
     const vertices = [];
     const colors = [];
@@ -656,6 +367,24 @@ function createCylinder(r, g, b, segments = 16) {
         colors: new Float32Array(colors),
         count: totalVertices
     };
+}
+
+// Função para desenhar um cubo
+function drawCube(cube, matrix) {
+    const vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, cube.vertices, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(program.a_Position, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(program.a_Position);
+
+    const colorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, cube.colors, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(program.a_Color, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(program.a_Color);
+
+    gl.uniformMatrix4fv(program.u_ModelMatrix, false, matrix.elements);
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
 }
 
 // Função para desenhar um cilindro
@@ -806,8 +535,6 @@ function drawAirHockeyTable() {
     }
 }
 
-// ========== FIM FUNÇÕES DA MESA DE AIR HOCKEY ==========
-
 // Configurar câmeras
 function setupCamera(cameraIndex) {
     viewMatrix = new Matrix4();
@@ -824,19 +551,19 @@ function setupCamera(cameraIndex) {
     
     switch(cameraIndex) {
         case 0: // Visão geral
-            viewMatrix.setLookAt(5, 5, 8, 0, 0, 0, 0, 1, 0);
+            viewMatrix.setLookAt(6, 4, 6, 0, 0, 0, 0, 1, 0);
             break;
         case 1: // Frontal
-            viewMatrix.setLookAt(0, 1, 6, 0, 0, 0, 0, 1, 0);
+            viewMatrix.setLookAt(0, 2, 5, 0, 0, 0, 0, 1, 0);
             break;
         case 2: // Lateral
-            viewMatrix.setLookAt(6, 1, 0, 0, 0, 0, 0, 1, 0);
+            viewMatrix.setLookAt(6, 2, 0, 0, 0, 0, 0, 1, 0);
             break;
         case 3: // De cima
             viewMatrix.setLookAt(0, 8, 0.1, 0, 0, 0, 0, 0, -1);
             break;
         case 4: // Próxima
-            viewMatrix.setLookAt(3, 2, 4, 0, 0, 0, 0, 1, 0);
+            viewMatrix.setLookAt(3, 1.5, 3, 0, 0, 0, 0, 1, 0);
             break;
     }
     
@@ -849,12 +576,8 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
 
-    updatePuckPhysics();
     setupCamera(currentCamera);
     drawAirHockeyTable();
-    drawMinecraftCharacter();
-    drawPaddles();
-    drawPuck();
 
     animationAngle += animationSpeed;
     requestAnimationFrame(render);
