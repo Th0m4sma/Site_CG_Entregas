@@ -300,24 +300,24 @@ function createCube(r, g, b) {
 }
 
 // Função para desenhar um cubo
-function drawCube(cube, matrix) {
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cube.vertices, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Position);
+function drawCube(cube, matrix, glContext, shaderProgram) {
+    const vertexBuffer = glContext.createBuffer();
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, vertexBuffer);
+    glContext.bufferData(glContext.ARRAY_BUFFER, cube.vertices, glContext.STATIC_DRAW);
+    glContext.vertexAttribPointer(shaderProgram.a_Position, 3, glContext.FLOAT, false, 0, 0);
+    glContext.enableVertexAttribArray(shaderProgram.a_Position);
 
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cube.colors, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(program.a_Color, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(program.a_Color);
+    const colorBuffer = glContext.createBuffer();
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, colorBuffer);
+    glContext.bufferData(glContext.ARRAY_BUFFER, cube.colors, glContext.STATIC_DRAW);
+    glContext.vertexAttribPointer(shaderProgram.a_Color, 3, glContext.FLOAT, false, 0, 0);
+    glContext.enableVertexAttribArray(shaderProgram.a_Color);
 
-    gl.uniformMatrix4fv(program.u_ModelMatrix, false, matrix.elements);
-    gl.drawArrays(gl.TRIANGLES, 0, 36);
+    glContext.uniformMatrix4fv(shaderProgram.u_ModelMatrix, false, matrix.elements);
+    glContext.drawArrays(glContext.TRIANGLES, 0, 36);
 }
 
-// Desenhar o personagem estilo     Minecraft (possível personalização no futuro)
+// Desenhar o personagem estilo Minecraft (possível personalização no futuro)
 function drawMinecraftCharacter() {
     const tempMatrix = new Matrix4();
     

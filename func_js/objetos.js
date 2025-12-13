@@ -3,7 +3,7 @@
 // Importar módulos dos objetos
 import { drawMinecraftCharacter } from './personagemModule.js';
 import { drawPaddles, drawCylindricObject as drawCylindricObjectPaddle, paddlePositions } from './bastao.js';
-import { drawPuck, updatePuckPhysics } from './disco.js';
+import { drawPuck, updatePuckPhysics, puckState } from './disco.js';
 import { drawAirHockeyTable } from './mesaAirHockey.js';
 
 // Variáveis globais
@@ -13,6 +13,26 @@ let canvas;
 let currentCamera = 0;
 let animationAngle = 0;
 let animationSpeed = 0.05;
+
+
+// Variáveis de controle
+let keys = {};
+const moveSpeed = 0.06;
+const limitZ = 0.9; // Limite lateral da mesa
+
+// IA
+const aiConfig = {
+    speed: 0.025,
+    errorRange: 0.4, // se aumentar a IA erra mais
+    reactionDelay: 0.05,
+    lastError: 0,
+    puckHistory: [], // array para guardar posições passadas
+    latencyFrames: 12 // quantos frames de atraso (Reflexo de ~0.2s)
+};
+
+// Listeners de teclado
+window.addEventListener('keydown', e => keys[e.key] = true);
+window.addEventListener('keyup', e => keys[e.key] = false);
 
 // Matrizes
 let modelMatrix;
@@ -365,21 +385,86 @@ function setupCamera(cameraIndex) {
     gl.uniformMatrix4fv(program.u_ViewMatrix, false, viewMatrix.elements);
 }
 
+function handleMovement() {
+    // Seta para Cima/Baixo ou Esquerda/Direita (depende da sua preferência de câmera)
+    // No seu caso, para mover lateralmente no gol:
+    if (keys['ArrowLeft'] && paddlePositions.paddle1.z > -limitZ) {
+        paddlePositions.paddle1.z -= moveSpeed;
+    }
+    if (keys['ArrowRight'] && paddlePositions.paddle1.z < limitZ) {
+        paddlePositions.paddle1.z += moveSpeed;
+    }
+}
+
 // Renderização
 function render() {
+    // 1. Configurações de tela e câmera (Apenas uma vez no início)
     gl.clearColor(0.1, 0.1, 0.1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-
-    updatePuckPhysics(paddlePositions);
     setupCamera(currentCamera);
+
+    // 2. Lógica de Entrada (Teclado do Jogador)
+    handleMovement(); 
+
+    // --- LÓGICA DA IA ---
+
+    // 1. Registrar a posição atual no histórico para criar o atraso (Latência)
+    aiConfig.puckHistory.push(puckState.z);
+    if (aiConfig.puckHistory.length > aiConfig.latencyFrames) {
+        aiConfig.puckHistory.shift(); // Remove o mais antigo
+    }
+
+    // 2. Definir o alvo: A IA olha para onde o disco ESTAVA (atraso de reflexo)
+    // Se o histórico ainda não encheu, ela foca no centro (0)
+    let delayedTargetZ = aiConfig.puckHistory[0] || 0;
+
+    // 3. Só agir se o disco estiver no campo da IA (puckState.x > 0)
+    // Se estiver no seu campo, ela volta devagar para o centro (z=0)
+    let finalTarget;
+    if (puckState.x < 0) {
+        finalTarget = 0; // Volta para o meio da baliza e espera
+    } else {
+        // Adiciona o erro aleatório apenas quando o disco está vindo
+        if (Math.random() < 0.02) {
+            aiConfig.lastError = (Math.random() - 0.5) * aiConfig.errorRange;
+        }
+        finalTarget = delayedTargetZ + aiConfig.lastError;
+    }
+
+    // 4. Movimentação com limite de velocidade (Perseguição)
+    let diff = finalTarget - paddlePositions.paddle2.z;
     
-    // Desenhar todos os objetos usando funções importadas
+    if (Math.abs(diff) > aiConfig.speed) {
+        paddlePositions.paddle2.z += Math.sign(diff) * aiConfig.speed;
+    } else {
+        paddlePositions.paddle2.z += diff * aiConfig.reactionDelay;
+    }
+
+    // Limites físicos da mesa
+    paddlePositions.paddle2.z = Math.max(-limitZ, Math.min(limitZ, paddlePositions.paddle2.z));
+
+    // --- FIM DA LÓGICA DA IA ---
+
+    // Limites da mesa
+    paddlePositions.paddle2.z = Math.max(-limitZ, Math.min(limitZ, paddlePositions.paddle2.z));
+
+    // 4. Atualiza a Física (Colisões)
+    updatePuckPhysics(paddlePositions);
+
+    // 5. Desenha os Personagens
+    drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, 
+        paddlePositions.paddle1.z, false); // Jogador
+
+    drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, 
+        paddlePositions.paddle2.z, true);  // IA (Agora com braço suave)
+
+    // 6. Desenha os Objetos da Mesa
+    drawPaddles(Matrix4, animationAngle, drawCylindricObjectPaddle, gl, program);
     drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program);
-    drawMinecraftCharacter(Matrix4, createCube, drawCube);
-    drawPaddles(Matrix4, animationAngle, drawCylindricObject);
     drawPuck(Matrix4, animationAngle, drawCylindricObject);
 
+    // 7. Atualiza animações e próximo frame
     animationAngle += animationSpeed;
     requestAnimationFrame(render);
 }

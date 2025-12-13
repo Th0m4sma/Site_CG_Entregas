@@ -2,9 +2,9 @@
 
 // Posições dos bastões (exportar para colisão)
 export const paddlePositions = {
-    paddle1: { x: 1.5, z: 0 },
-    paddle2: { x: -1.5, z: 0 },
-    radius: 0.15 // 0.10 * 1.5 (escala)
+    paddle1: { x: -1.7, z: 0 }, // Jogador humano
+    paddle2: { x: 1.7, z: 0 },  // Oponente
+    radius: 0.15 
 };
 
 // Função para criar os vértices de um cilindro 3D
@@ -96,29 +96,25 @@ function createPaddle(baseRadius, baseHeight, handleRadius, handleHeight, segmen
 }
 
 // Exportar função para desenhar os bastões
-export function drawPaddles(Matrix4, animationAngle, drawCylindricObject) {
+export function drawPaddles(Matrix4, animationAngle, drawCylindricObject, gl, program) {
     const tempMatrix = new Matrix4();
-    tempMatrix.setIdentity();
     
-    // Criar bastãos
+    // BASTÃO DO JOGADOR
     const paddle1 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [1, 0, 0], [0.3, 0.3, 0.3]);
-    const paddle2 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0, 0, 1], [0.3, 0.3, 0.3]);
-    
-    // Bastão à direita do personagem
     const paddle1Matrix = new Matrix4();
-    paddle1Matrix.set(tempMatrix);
-    paddle1Matrix.translate(1.5, 0.1, 0);
-    paddle1Matrix.rotate(animationAngle * 50, 0, 1, 0);
+    paddle1Matrix.setIdentity();
+    // Valores de paddlePositions
+    paddle1Matrix.translate(paddlePositions.paddle1.x, 0.1, paddlePositions.paddle1.z);
     paddle1Matrix.scale(1.5, 1.5, 1.5);
-    drawCylindricObject(paddle1, paddle1Matrix);
-    
-    // Bastão à esquerda do personagem
+    drawCylindricObject(paddle1, paddle1Matrix, gl, program);
+
+    // BASTÃO DO OPONENTE
+    const paddle2 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0, 0, 1], [0.3, 0.3, 0.3]);
     const paddle2Matrix = new Matrix4();
-    paddle2Matrix.set(tempMatrix);
-    paddle2Matrix.translate(-1.5, 0.1, 0);
-    paddle2Matrix.rotate(-animationAngle * 50, 0, 1, 0);
+    paddle2Matrix.setIdentity();
+    paddle2Matrix.translate(paddlePositions.paddle2.x, 0.1, paddlePositions.paddle2.z);
     paddle2Matrix.scale(1.5, 1.5, 1.5);
-    drawCylindricObject(paddle2, paddle2Matrix);
+    drawCylindricObject(paddle2, paddle2Matrix, gl, program);
 }
 
 // Exportar função para desenhar objeto cilíndrico
