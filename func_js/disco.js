@@ -192,7 +192,7 @@ export function updatePuckPhysics(paddlePositions = null) {
     puckState.z += puckState.velocityZ;
 
     // Definir área do gol (centro da mesa)
-    const goalZoneSize = 0.6;
+    const goalZoneSize = 0.4;
 
     // Verificar colisão com bordas laterais (esquerda/direita) e GOLS
     if (puckState.x - puckState.scaledRadius <= puckState.tableMinX) {
