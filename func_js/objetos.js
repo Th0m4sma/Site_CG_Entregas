@@ -1,10 +1,10 @@
 // ========== ARQUIVO PRINCIPAL - IMPORTA TODOS OS OBJETOS ==========
 
 // Importar módulos dos objetos
-import { drawMinecraftCharacter } from './personagemModule.js';
-import { drawPaddles, drawCylindricObject as drawCylindricObjectPaddle, paddlePositions } from './bastao.js';
-import { drawPuck, updatePuckPhysics, puckState } from './disco.js';
+import { drawCylindricObject as drawCylindricObjectPaddle, drawPaddles, paddlePositions } from './bastao.js';
+import { drawPuck, puckState, resetGame, resetPuck, togglePause, updatePuckPhysics } from './disco.js';
 import { drawAirHockeyTable } from './mesaAirHockey.js';
+import { drawMinecraftCharacter } from './personagemModule.js';
 
 // Variáveis globais
 let gl;
@@ -474,6 +474,16 @@ document.addEventListener('keydown', (e) => {
     if (e.key >= '1' && e.key <= '5') {
         currentCamera = parseInt(e.key) - 1;
     }
+    if (e.key === 'p' || e.key === 'P') {
+        togglePause();
+    }
+    if (e.key === ' ') {
+        e.preventDefault();
+        resetPuck();
+    }
+    if (e.key === 'r' || e.key === 'R') {
+        resetGame();
+    }
 });
 
 // Ajustar canvas quando redimensionar
@@ -490,17 +500,17 @@ window.addEventListener('resize', () => {
 // Iniciar aplicação
 window.onload = function() {
     if (!initWebGL()) return;
-    
+
     initShaders();
-    
+
     gl.viewport(0, 0, canvas.width, canvas.height);
-    
+
     projectionMatrix = new Matrix4();
     projectionMatrix.setPerspective(45, canvas.width / canvas.height, 0.1, 100);
     gl.uniformMatrix4fv(program.u_ProjectionMatrix, false, projectionMatrix.elements);
-    
+
     modelMatrix = new Matrix4();
     modelMatrix.setIdentity();
-    
+
     render();
 };

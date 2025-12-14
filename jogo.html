@@ -36,17 +36,90 @@
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 15px;
             z-index: 100;
         }
 
         .info h3 {
             margin: 0 0 10px 0;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .info p {
-            margin: 5px 0;
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .score-container {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .score-container h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .score-display {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .score-player1 {
+            color: #3498db;
+            text-shadow: 0 0 15px #3498db;
+        }
+
+        .score-separator {
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .score-player2 {
+            color: #e74c3c;
+            text-shadow: 0 0 15px #e74c3c;
+        }
+
+        .reset-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .reset-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
         }
 
         kbd {
@@ -93,6 +166,10 @@
                     <a href="mailto:Jv.rocha@unifesp.br">Jv.rocha@unifesp.br</a>
                 </li>
                 <li>
+                    Rodrigo Lopes Marques<br>
+                    <a href="mailto:rodrigo.lopes@unifesp.br">rodrigo.lopes@unifesp.br</a>
+                </li>
+                <li>
                     Thomas Pires Correia<br>
                     <a href="mailto:correia.thomas@unifesp.br">correia.thomas@unifesp.br</a>
                 </li>
@@ -103,8 +180,20 @@
     <div class="info">
         <h3>Projeto Final - Air Hockey 3D</h3>
         <p><strong>Câmera:</strong> <span id="camera-name">Visão Geral</span></p>
-        <p><em>Teclas 1-5 para trocar câmera</em></p>
-        <p>Teclas <kbd>&larr;</kbd> e <kbd>&rarr;</kbd> para mover</p>
+        <p><kbd>1-5</kbd> Trocar câmera</p>
+        <p><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Mover jogador</p>
+        <p><kbd>Espaço</kbd> Resetar bola</p>
+        <p><kbd>P</kbd> Pausar jogo</p>
+        <p><kbd>R</kbd> Resetar jogo</p>
+    </div>
+
+    <div class="score-container">
+        <h3>Air Hockey 3D</h3>
+        <div class="score-display">
+            <span class="score-player1" id="score-player1">0</span>
+            <span class="score-separator">x</span>
+            <span class="score-player2" id="score-player2">0</span>
+        </div>
     </div>
 
     <!-- Carregar como módulo ES6 -->

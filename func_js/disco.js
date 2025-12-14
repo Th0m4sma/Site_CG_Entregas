@@ -3,17 +3,87 @@
 // Variáveis do disco (puck)
 export let puckState = {
     x: 0,
-    z: 2,
+    z: 0,
     velocityX: 0.03,
     velocityZ: 0.02,
     scaledRadius: 0.15, // raio do disco após escala (0.05 * 3)
-    
+
+    // Sistema de delay
+    isPaused: false,
+    pauseTimeRemaining: 0,
+    nextVelocityX: 0,
+    nextVelocityZ: 0,
+
+    // Sistema de pausa
+    isGamePaused: false,
+    savedVelocityX: 0,
+    savedVelocityZ: 0,
+
     // Limites da mesa
     tableMinX: -1.8,
     tableMaxX: 1.8,
     tableMinZ: -1.1,
     tableMaxZ: 1.1
 };
+
+// Sistema de pontuação
+export let scoreState = {
+    player1: 0, 
+    player2: 0  
+};
+
+export function resetPuck() {
+    puckState.x = 0;
+    puckState.z = 0;
+    puckState.velocityX = 0;
+    puckState.velocityZ = 0;
+
+    // Pausar por 1 segundo
+    puckState.isPaused = true;
+    puckState.pauseTimeRemaining = 60;
+
+    // Guardar a direção aleatória para quando o timer acabar
+    const angle = (Math.random() - 0.5) * Math.PI / 2;
+    const speed = 0.03;
+    puckState.nextVelocityX = Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1);
+    puckState.nextVelocityZ = Math.sin(angle) * speed;
+}
+
+export function resetGame() {
+    scoreState.player1 = 0;
+    scoreState.player2 = 0;
+    updateScoreDisplay();
+    resetPuck();
+}
+
+export function togglePause() {
+    if (puckState.isGamePaused) {
+        // Despausar
+        puckState.velocityX = puckState.savedVelocityX;
+        puckState.velocityZ = puckState.savedVelocityZ;
+        puckState.isGamePaused = false;
+    } else {
+        // Pausar
+        puckState.savedVelocityX = puckState.velocityX;
+        puckState.savedVelocityZ = puckState.velocityZ;
+        puckState.velocityX = 0;
+        puckState.velocityZ = 0;
+        puckState.isGamePaused = true;
+    }
+}
+
+// Atualizar o placar na tela
+function updateScoreDisplay() {
+    const scorePlayer1 = document.getElementById('score-player1');
+    const scorePlayer2 = document.getElementById('score-player2');
+
+    if (scorePlayer1) {
+        scorePlayer1.textContent = scoreState.player1;
+    }
+    if (scorePlayer2) {
+        scorePlayer2.textContent = scoreState.player2;
+    }
+}
 
 // Função para criar os vértices de um cilindro 3D
 function createCylinderVertices(radius, height, segments) {
@@ -102,17 +172,53 @@ export function drawPuck(Matrix4, animationAngle, drawCylindricObject) {
 
 // Atualizar física do disco
 export function updatePuckPhysics(paddlePositions = null) {
+    if (puckState.isGamePaused) {
+        return;
+    }
+
+    // countdown após gol
+    if (puckState.isPaused) {
+        puckState.pauseTimeRemaining--;
+        if (puckState.pauseTimeRemaining <= 0) {
+            puckState.isPaused = false;
+            puckState.velocityX = puckState.nextVelocityX;
+            puckState.velocityZ = puckState.nextVelocityZ;
+        }
+        return;
+    }
+
     // Atualizar posição
     puckState.x += puckState.velocityX;
     puckState.z += puckState.velocityZ;
 
-    // Verificar colisão com bordas laterais (esquerda/direita)
+    // Definir área do gol (centro da mesa)
+    const goalZoneSize = 0.6;
+
+    // Verificar colisão com bordas laterais (esquerda/direita) e GOLS
     if (puckState.x - puckState.scaledRadius <= puckState.tableMinX) {
-        puckState.x = puckState.tableMinX + puckState.scaledRadius;
-        puckState.velocityX = Math.abs(puckState.velocityX); // Inverte para direita
+        // Verificar se está na área do gol
+        if (Math.abs(puckState.z) <= goalZoneSize) {
+            // Jogador 2 marcou
+            scoreState.player2++;
+            updateScoreDisplay();
+            resetPuck();
+        } else {
+            // Apenas rebate na borda
+            puckState.x = puckState.tableMinX + puckState.scaledRadius;
+            puckState.velocityX = Math.abs(puckState.velocityX); // Inverte para direita
+        }
     } else if (puckState.x + puckState.scaledRadius >= puckState.tableMaxX) {
-        puckState.x = puckState.tableMaxX - puckState.scaledRadius;
-        puckState.velocityX = -Math.abs(puckState.velocityX); // Inverte para esquerda
+        // Verificar se está na área do gol
+        if (Math.abs(puckState.z) <= goalZoneSize) {
+            // Jogador 1 marcou
+            scoreState.player1++;
+            updateScoreDisplay();
+            resetPuck();
+        } else {
+            // Apenas rebate na borda
+            puckState.x = puckState.tableMaxX - puckState.scaledRadius;
+            puckState.velocityX = -Math.abs(puckState.velocityX); // Inverte para esquerda
+        }
     }
 
     // Verificar colisão com bordas superior/inferior

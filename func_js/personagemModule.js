@@ -16,8 +16,9 @@ export function drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCub
 
     // CORES
     const skinColor = [0.7, 0.5, 0.3];
-    const shirtColor = [0.2, 0.8, 0.3];
-    const pantsColor = [0.2, 0.3, 0.7];
+    // Jogador 1 Azul, Jogador 2 Vermelho
+    const shirtColor = isPlayer2 ? [0.9, 0.1, 0.1] : [0.1, 0.3, 0.9];
+    const pantsColor = isPlayer2 ? [0.4, 0.05, 0.05] : [0.05, 0.1, 0.4];
     const black = [0, 0, 0];
 
     // Cabeça

@@ -99,8 +99,8 @@ function createPaddle(baseRadius, baseHeight, handleRadius, handleHeight, segmen
 export function drawPaddles(Matrix4, animationAngle, drawCylindricObject, gl, program) {
     const tempMatrix = new Matrix4();
     
-    // BASTÃO DO JOGADOR
-    const paddle1 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [1, 0, 0], [0.3, 0.3, 0.3]);
+    // Bastão do Jogador 1 Azul
+    const paddle1 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0.1, 0.3, 0.9], [0.3, 0.3, 0.3]);
     const paddle1Matrix = new Matrix4();
     paddle1Matrix.setIdentity();
     // Valores de paddlePositions
@@ -108,8 +108,8 @@ export function drawPaddles(Matrix4, animationAngle, drawCylindricObject, gl, pr
     paddle1Matrix.scale(1.5, 1.5, 1.5);
     drawCylindricObject(paddle1, paddle1Matrix, gl, program);
 
-    // BASTÃO DO OPONENTE
-    const paddle2 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0, 0, 1], [0.3, 0.3, 0.3]);
+    // Bastão do Jogador 2 Vermelho
+    const paddle2 = createPaddle(0.10, 0.05, 0.03, 0.1, 24, [0.9, 0.1, 0.1], [0.3, 0.3, 0.3]);
     const paddle2Matrix = new Matrix4();
     paddle2Matrix.setIdentity();
     paddle2Matrix.translate(paddlePositions.paddle2.x, 0.1, paddlePositions.paddle2.z);
