@@ -83,6 +83,33 @@ function updateScoreDisplay() {
     if (scorePlayer2) {
         scorePlayer2.textContent = scoreState.player2;
     }
+
+    // Verificar vitória
+    checkWinCondition();
+}
+
+// Verificar condição de vitória
+function checkWinCondition() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const maxScore = parseInt(urlParams.get('maxScore')) || 5;
+    const gameMode = urlParams.get('modo') || '1xBot';
+    const isBotMode = gameMode === '1xBot';
+    const player1Name = urlParams.get('player1') || 'Jogador 1';
+    const player2Name = urlParams.get('player2') || (isBotMode ? 'Bot' : 'Jogador 2');
+
+    if (maxScore === 999) return; // Sem limite
+
+    if (scoreState.player1 >= maxScore) {
+        setTimeout(() => {
+            alert(`🎉 ${player1Name} VENCEU! 🎉\n\nPlacar Final: ${scoreState.player1} x ${scoreState.player2}`);
+            window.location.href = 'index.html';
+        }, 100);
+    } else if (scoreState.player2 >= maxScore) {
+        setTimeout(() => {
+            alert(`🎉 ${player2Name} VENCEU! 🎉\n\nPlacar Final: ${scoreState.player1} x ${scoreState.player2}`);
+            window.location.href = 'index.html';
+        }, 100);
+    }
 }
 
 // Função para criar os vértices de um cilindro 3D

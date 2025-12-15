@@ -23,7 +23,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 0; /* fica atrás */
+            z-index: 0;
             background-color: black;
         }
 
@@ -33,46 +33,99 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 350px;
-            padding: 25px;
+            width: 380px;
+            padding: 30px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(0,0,0,0.4);
-            z-index: 10; /* acima do canvas */
+            z-index: 10;
             text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #loginBox h2 {
+            margin: 0 0 20px 0;
+            color: rgb(225, 71, 71);
+            font-size: 28px;
+        }
+
+        #loginBox label {
+            display: block;
+            text-align: left;
+            margin: 15px 0 5px 0;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
         }
 
         #loginBox input {
             width: 89%;
             padding: 10px;
-            margin: 8px 0;
+            margin: 0 0 10px 0;
             border-radius: 6px;
             border: 1px solid #aaa;
             font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        #loginBox input:focus {
+            outline: none;
+            border: 1px solid rgb(225, 71, 71);
+        }
+
+        #loginBox select {
+            width: 95%;
+            padding: 10px;
+            margin: 0 0 10px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+            cursor: pointer;
+            transition: border 0.3s;
+        }
+
+        #loginBox select:focus {
+            outline: none;
+            border: 1px solid rgb(225, 71, 71);
         }
 
         #loginBox button {
             width: 95%;
-            padding: 10px;
+            padding: 12px;
+            margin-top: 20px;
             border: none;
             border-radius: 6px;
             background-color: rgb(225, 71, 71);
             color: white;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
         }
 
         #loginBox button:hover {
             background-color: rgb(200, 40, 40);
         }
 
-        #loginBox select {
-            width: 95%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #aaa;
-            font-size: 16px;
+        #loginBox button:active {
+            transform: scale(0.98);
+        }
+
+        /* Campo do Player 2 (oculto por padrão) */
+        #player2Field {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .divider {
+            margin: 20px 0;
+            border-top: 1px solid #ddd;
         }
     </style>
 </head>
@@ -83,25 +136,80 @@
 
     <!-- Caixa de login -->
     <div id="loginBox">
-        <h2>Login</h2>
-        <input type="text" placeholder="Nome">
+        <h2>🏒 Air Hockey 3D</h2>
 
+        <!-- Modo de Jogo -->
         <select id="modoSelect">
-            <option value="1x1" selected>1 x 1</option>
-            <option value="1xBot">1 x Bot</option>
+            <option value="1xBot" selected>1 x Bot</option>
+            <option value="1x1">1 x 1</option>
         </select>
 
-        <button id="entrarBtn">Entrar</button>
+        <!-- Player 1 -->
+        <input type="text" id="player1Name" placeholder="Nome do Jogador 1" maxlength="20">
+
+        <!-- Player 2 (só aparece no modo 1x1) -->
+        <div id="player2Field">
+            <input type="text" id="player2Name" placeholder="Nome do Jogador 2" maxlength="20">
+        </div>
+
+        <!-- Pontuação Máxima -->
+        <select id="maxScore">
+            <option value="3">3 pontos</option>
+            <option value="5" selected>5 pontos</option>
+            <option value="7">7 pontos</option>
+            <option value="10">10 pontos</option>
+            <option value="15">15 pontos</option>
+            <option value="999">Sem limite</option>
+        </select>
+
+        <button id="entrarBtn">Iniciar Jogo</button>
     </div>
 
     <script src="m4.js"></script>
     <script src="func_js/pagina_inicial.js"></script>
 
     <script>
-        document.getElementById("entrarBtn").addEventListener("click", function() {
-            const modo = document.getElementById("modoSelect").value;
-            // Passa o modo como parâmetro na URL
-            window.location.href = `jogo.html?modo=${modo}`;
+        // Mostrar/ocultar campo do Player 2
+        const modoSelect = document.getElementById('modoSelect');
+        const player2Field = document.getElementById('player2Field');
+
+        modoSelect.addEventListener('change', function() {
+            if (this.value === '1x1') {
+                player2Field.style.display = 'block';
+            } else {
+                player2Field.style.display = 'none';
+            }
+        });
+
+        // Iniciar jogo
+        document.getElementById('entrarBtn').addEventListener('click', function() {
+            const modo = document.getElementById('modoSelect').value;
+            const player1 = document.getElementById('player1Name').value.trim() || 'Jogador 1';
+            const player2 = document.getElementById('player2Name').value.trim() || 'Jogador 2';
+            const maxScore = document.getElementById('maxScore').value;
+
+            // Montar URL com parâmetros
+            const params = new URLSearchParams({
+                modo: modo,
+                player1: player1,
+                player2: modo === '1x1' ? player2 : 'Bot',
+                maxScore: maxScore
+            });
+
+            window.location.href = `jogo.html?${params.toString()}`;
+        });
+
+        // Permitir Enter para iniciar
+        document.getElementById('player1Name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('entrarBtn').click();
+            }
+        });
+
+        document.getElementById('player2Name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('entrarBtn').click();
+            }
         });
     </script>
 

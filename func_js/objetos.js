@@ -6,10 +6,13 @@ import { drawPuck, puckState, resetGame, resetPuck, togglePause, updatePuckPhysi
 import { drawAirHockeyTable } from './mesaAirHockey.js';
 import { drawMinecraftCharacter } from './personagemModule.js';
 
-// Pega o parâmetro 'modo' da URL (1x1 ou 1xBot)
+// ========== CONFIGURAÇÕES DO JOGO ==========
 const urlParams = new URLSearchParams(window.location.search);
-const gameMode = urlParams.get('modo') || '1xBot'; // Padrão é 1xBot
+const gameMode = urlParams.get('modo') || '1xBot';
 const isBotMode = gameMode === '1xBot';
+const player1Name = urlParams.get('player1') || 'Jogador 1';
+const player2Name = urlParams.get('player2') || (isBotMode ? 'Bot' : 'Jogador 2');
+const maxScore = parseInt(urlParams.get('maxScore')) || 5;
 
 // Variáveis globais
 let gl;
