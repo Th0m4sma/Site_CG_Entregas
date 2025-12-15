@@ -100,11 +100,8 @@
     <script>
         document.getElementById("entrarBtn").addEventListener("click", function() {
             const modo = document.getElementById("modoSelect").value;
-            if (modo === "1x1") {
-                window.location.href = "jogo.html";
-            } else if (modo === "1xBot") {
-                alert("Modo 1xBot ainda não implementado!");
-            }
+            // Passa o modo como parâmetro na URL
+            window.location.href = `jogo.html?modo=${modo}`;
         });
     </script>
 
