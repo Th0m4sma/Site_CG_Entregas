@@ -2,7 +2,7 @@
 
 // Importar módulos dos objetos
 import { drawCylindricObject as drawCylindricObjectPaddle, drawPaddles, paddlePositions } from './bastao.js';
-import { drawPuck, puckState, resetGame, resetPuck, togglePause, updatePuckPhysics } from './disco.js';
+import { drawPuck, puckState, resetGame, resetPuck, togglePause, updatePuckPhysics, setPuckSpeed } from './disco.js';
 import { drawAirHockeyTable } from './mesaAirHockey.js';
 import { drawMinecraftCharacter } from './Personagem.js';
 
@@ -510,6 +510,11 @@ window.onload = function() {
 
     modelMatrix = new Matrix4();
     modelMatrix.setIdentity();
+
+    // Aplicar velocidade inicial do disco a partir dos parâmetros da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const puckSpeed = parseInt(urlParams.get('puckSpeed')) || 2; // Padrão: Normal (2)
+    setPuckSpeed(puckSpeed);
 
     render();
 };

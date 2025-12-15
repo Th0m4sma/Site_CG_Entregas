@@ -1,11 +1,13 @@
 // ========== MÓDULO DO DISCO (PUCK) ==========
 
+let currentBaseSpeed = 0.03; 
+
 // Variáveis do disco (puck)
 export let puckState = {
     x: 0,
     z: 0,
     velocityX: 0.03,
-    velocityZ: 0.02,
+    velocityZ: 0.03,
     scaledRadius: 0.15, // raio do disco após escala (0.05 * 3)
 
     // Sistema de delay
@@ -32,19 +34,111 @@ export let scoreState = {
     player2: 0  
 };
 
+// --- NOVA FUNÇÃO PARA CONTROLAR VELOCIDADE ---
+export function setPuckSpeed(modeIndex) {
+    const velLabel = document.getElementById('disco_vel-name');
+    let newSpeed = 0.03;
+    let labelText = "Normal";
+
+    // 1. Define a nova velocidade base
+    switch(modeIndex) {
+        case 1: // Lenta (tecla 1 ou 7)
+            newSpeed = 0.015;
+            labelText = "Velocidade Lenta";
+            break;
+        case 2: // Normal (tecla 2 ou 8)
+            newSpeed = 0.03;
+            labelText = "Velocidade Normal";
+            break;
+        case 3: // Rápida (tecla 3 ou 9)
+            newSpeed = 0.05; // Aumentei um pouco para ser perceptível
+            labelText = "Velocidade Rápida";
+            break;
+        default:
+            return; // Se não for um índice válido, sai
+    }
+
+    // 2. Atualiza o texto na tela
+    if (velLabel) {
+        velLabel.textContent = labelText;
+    }
+
+    // 3. Atualiza a variável global de velocidade
+    currentBaseSpeed = newSpeed;
+
+    // 4. Aplica a mudança IMEDIATAMENTE se o disco estiver em movimento
+    // Isso evita ter que esperar o próximo reset para a velocidade mudar
+    if (!puckState.isPaused && !puckState.isGamePaused) {
+        // Calcula a direção atual (normaliza o vetor)
+        const currentMag = Math.sqrt(puckState.velocityX * puckState.velocityX + puckState.velocityZ * puckState.velocityZ);
+        
+        if (currentMag > 0.0001) { // Evita divisão por zero
+            // Mantém a direção, mas aplica a nova magnitude
+            puckState.velocityX = (puckState.velocityX / currentMag) * currentBaseSpeed;
+            puckState.velocityZ = (puckState.velocityZ / currentMag) * currentBaseSpeed;
+        }
+    } 
+    // Se estiver pausado (contagem regressiva), atualiza a próxima velocidade
+    else if (puckState.isPaused) {
+        const nextMag = Math.sqrt(puckState.nextVelocityX * puckState.nextVelocityX + puckState.nextVelocityZ * puckState.nextVelocityZ);
+        if (nextMag > 0.0001) {
+             puckState.nextVelocityX = (puckState.nextVelocityX / nextMag) * currentBaseSpeed;
+             puckState.nextVelocityZ = (puckState.nextVelocityZ / nextMag) * currentBaseSpeed;
+        }
+    }
+}
+
+// --- FUNÇÃO PARA CONTROLAR DIFICULDADE DO BOT ---
+export function setBotDifficulty(difficultyIndex, aiConfig) {
+    const diffLabel = document.getElementById('difficulty-name');
+    let labelText = "Médio";
+
+    // Configura os parâmetros da IA baseado na dificuldade
+    switch(difficultyIndex) {
+        case 1: // Fácil (tecla 4)
+            aiConfig.speed = 0.015;           // Bot mais lento
+            aiConfig.errorRange = 0.8;         // Erra mais
+            aiConfig.latencyFrames = 20;       // Reação mais lenta
+            labelText = "Dificuldade Fácil";
+            break;
+        case 2: // Médio (tecla 5)
+            aiConfig.speed = 0.025;            // Velocidade média
+            aiConfig.errorRange = 0.4;         // Erro moderado
+            aiConfig.latencyFrames = 12;       // Reação moderada
+            labelText = "Dificuldade Média";
+            break;
+        case 3: // Difícil (tecla 6)
+            aiConfig.speed = 0.04;             // Bot mais rápido
+            aiConfig.errorRange = 0.15;        // Quase não erra
+            aiConfig.latencyFrames = 5;        // Reação rápida
+            labelText = "Dificuldade Difícil";
+            break;
+        default:
+            return; // Se não for um índice válido, sai
+    }
+
+    // Atualiza o texto na tela
+    if (diffLabel) {
+        diffLabel.textContent = labelText;
+    }
+}
+
 export function resetPuck() {
     puckState.x = 0;
     puckState.z = 0;
     puckState.velocityX = 0;
     puckState.velocityZ = 0;
 
-    // Pausar por 1 segundo
+    // Pausar por 1 segundo (60 frames aprox)
     puckState.isPaused = true;
     puckState.pauseTimeRemaining = 60;
 
     // Guardar a direção aleatória para quando o timer acabar
     const angle = (Math.random() - 0.5) * Math.PI / 2;
-    const speed = 0.03;
+    
+    // AQUI ESTÁ A MUDANÇA IMPORTANTE: Usamos currentBaseSpeed em vez de valor fixo
+    const speed = currentBaseSpeed; 
+    
     puckState.nextVelocityX = Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1);
     puckState.nextVelocityZ = Math.sin(angle) * speed;
 }
@@ -267,7 +361,7 @@ export function updatePuckPhysics(paddlePositions = null) {
 
         if (distance1 < minDistance1) {
             // Normalizar o vetor de colisão
-            const nx = dx1 / distance1;
+            const  nx = dx1 / distance1;
             const nz = dz1 / distance1;
             
             // Separar o disco do bastão

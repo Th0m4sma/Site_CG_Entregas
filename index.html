@@ -162,6 +162,13 @@
             <option value="999">Sem limite</option>
         </select>
 
+        <!-- Velocidade do Disco -->
+        <select id="puckSpeed">
+            <option value="1">Velocidade Lenta</option>
+            <option value="2" selected>Velocidade Normal</option>
+            <option value="3">Velocidade Rápida</option>
+        </select>
+
         <button id="entrarBtn">Iniciar Jogo</button>
     </div>
 
@@ -187,13 +194,15 @@
             const player1 = document.getElementById('player1Name').value.trim() || 'Jogador 1';
             const player2 = document.getElementById('player2Name').value.trim() || 'Jogador 2';
             const maxScore = document.getElementById('maxScore').value;
+            const puckSpeed = document.getElementById('puckSpeed').value;
 
             // Montar URL com parâmetros
             const params = new URLSearchParams({
                 modo: modo,
                 player1: player1,
                 player2: modo === '1x1' ? player2 : 'Bot',
-                maxScore: maxScore
+                maxScore: maxScore,
+                puckSpeed: puckSpeed
             });
 
             window.location.href = `jogo.html?${params.toString()}`;
