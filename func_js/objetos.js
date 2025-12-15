@@ -374,11 +374,11 @@ function setupCamera(cameraIndex) {
         case 2: // Lateral
             viewMatrix.setLookAt(6, 1, 0, 0, 0, 0, 0, 1, 0);
             break;
-        case 3: // De cima
-            viewMatrix.setLookAt(0, 8, 0.1, 0, 0, 0, 0, 0, -1);
+        case 3: // De cima (jogador embaixo, inimigo em cima)
+            viewMatrix.setLookAt(-3.5, 12, 0, 0, 0, 0, 1, 0, 0);
             break;
-        case 4: // Próxima
-            viewMatrix.setLookAt(3, 2, 4, 0, 0, 0, 0, 1, 0);
+        case 4: // Visão do Personagem (FPS - sem cabeça)
+            viewMatrix.setLookAt(-3.4, 2.2, 0, 0.5, 0, 0, 0, 1, 0);
             break;
     }
     
@@ -454,10 +454,10 @@ function render() {
 
     // 5. Desenha os Personagens
     drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, 
-        paddlePositions.paddle1.z, false); // Jogador
+        paddlePositions.paddle1.z, false, currentCamera); // Jogador
 
     drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, 
-        paddlePositions.paddle2.z, true);  // IA (Agora com braço suave)
+        paddlePositions.paddle2.z, true, currentCamera);  // IA (Agora com braço suave)
 
     // 6. Desenha os Objetos da Mesa
     drawPaddles(Matrix4, animationAngle, drawCylindricObjectPaddle, gl, program);

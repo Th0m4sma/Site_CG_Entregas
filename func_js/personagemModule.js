@@ -1,6 +1,6 @@
 // ========== personagemModule.js ==========
 
-export function drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, currentZ, isPlayer2 = false) {
+export function drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCube, currentZ, isPlayer2 = false, currentCamera = 0) {
     const baseMatrix = new Matrix4();
     baseMatrix.setIdentity();
 
@@ -21,14 +21,17 @@ export function drawMinecraftCharacter(gl, program, Matrix4, createCube, drawCub
     const pantsColor = isPlayer2 ? [0.4, 0.05, 0.05] : [0.05, 0.1, 0.4];
     const black = [0, 0, 0];
 
-    // Cabeça
-    drawCube(createCube(...skinColor), new Matrix4().set(baseMatrix).translate(0, 1.25, 0).scale(0.8, 0.8, 0.8), gl, program);
+    // Cabeça (esconde na visão 5 se for jogador 1)
+    const hideHead = (currentCamera === 4 && !isPlayer2); // camera 4 = tecla 5
+    if (!hideHead) {
+        drawCube(createCube(...skinColor), new Matrix4().set(baseMatrix).translate(0, 1.25, 0).scale(0.8, 0.8, 0.8), gl, program);
+        // Olhos e Boca
+        drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(-0.15, 1.35, 0.41).scale(0.12, 0.12, 0.05), gl, program);
+        drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(0.15, 1.35, 0.41).scale(0.12, 0.12, 0.05), gl, program);
+        drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(0, 1.10, 0.41).scale(0.3, 0.06, 0.05), gl, program);
+    }
     // Corpo
     drawCube(createCube(...shirtColor), new Matrix4().set(baseMatrix).translate(0, 0.25, 0).scale(0.8, 1.2, 0.4), gl, program);
-    // Olhos e Boca
-    drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(-0.15, 1.35, 0.41).scale(0.12, 0.12, 0.05), gl, program);
-    drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(0.15, 1.35, 0.41).scale(0.12, 0.12, 0.05), gl, program);
-    drawCube(createCube(...black), new Matrix4().set(baseMatrix).translate(0, 1.10, 0.41).scale(0.3, 0.06, 0.05), gl, program);
     // Pernas
     drawCube(createCube(...pantsColor), new Matrix4().set(baseMatrix).translate(-0.25, -0.6, 0).scale(0.3, 0.9, 0.3), gl, program);
     drawCube(createCube(...pantsColor), new Matrix4().set(baseMatrix).translate(0.25, -0.6, 0).scale(0.3, 0.9, 0.3), gl, program);
