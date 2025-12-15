@@ -4,15 +4,7 @@
 import { drawCylindricObject as drawCylindricObjectPaddle, drawPaddles, paddlePositions } from './bastao.js';
 import { drawPuck, puckState, resetGame, resetPuck, togglePause, updatePuckPhysics } from './disco.js';
 import { drawAirHockeyTable } from './mesaAirHockey.js';
-import { drawMinecraftCharacter } from './personagemModule.js';
-
-// ========== CONFIGURAÇÕES DO JOGO ==========
-const urlParams = new URLSearchParams(window.location.search);
-const gameMode = urlParams.get('modo') || '1xBot';
-const isBotMode = gameMode === '1xBot';
-const player1Name = urlParams.get('player1') || 'Jogador 1';
-const player2Name = urlParams.get('player2') || (isBotMode ? 'Bot' : 'Jogador 2');
-const maxScore = parseInt(urlParams.get('maxScore')) || 5;
+import { drawMinecraftCharacter } from './Personagem.js';
 
 // Variáveis globais
 let gl;
@@ -386,7 +378,7 @@ function setupCamera(cameraIndex) {
             viewMatrix.setLookAt(-3.5, 12, 0, 0, 0, 0, 1, 0, 0);
             break;
         case 4: // Visão do Personagem (FPS - sem cabeça)
-            viewMatrix.setLookAt(-4, 2.5, 0, 1.0, 0.3, 0, 0, 1, 0);
+            viewMatrix.setLookAt(-4.2, 2.5, 0, 1.0, 0.3, 0, 0, 1, 0);
             break;
     }
     
@@ -394,41 +386,27 @@ function setupCamera(cameraIndex) {
 }
 
 function handleMovement() {
-    // ========== PLAYER 1 - Sempre ativo ==========
-    if (isBotMode) {
-        // Modo 1xBot: Player 1 pode usar WASD OU Setas
-        if ((keys['a'] || keys['ArrowLeft']) && paddlePositions.paddle1.z > -limitZ) {
-            paddlePositions.paddle1.z -= moveSpeed;
-        }
-        if ((keys['d'] || keys['ArrowRight']) && paddlePositions.paddle1.z < limitZ) {
-            paddlePositions.paddle1.z += moveSpeed;
-        }
-    } else {
-        // Modo 1x1: Player 1 usa apenas WASD
-        if (keys['a'] && paddlePositions.paddle1.z > -limitZ) {
-            paddlePositions.paddle1.z -= moveSpeed;
-        }
-        if (keys['d'] && paddlePositions.paddle1.z < limitZ) {
-            paddlePositions.paddle1.z += moveSpeed;
-        }
+    // Seta para Cima/Baixo ou Esquerda/Direita (depende da sua preferência de câmera)
+    if (keys['ArrowLeft'] && paddlePositions.paddle1.z > -limitZ) {
+        paddlePositions.paddle1.z -= moveSpeed;
     }
-
-    // ========== PLAYER 2 (Setas) - Só no modo 1x1 ==========
-    if (!isBotMode) {
-        // Modo 1x1: Player 2 usa apenas as Setas
-        if (keys['ArrowRight'] && paddlePositions.paddle2.z > -limitZ) {
-            paddlePositions.paddle2.z -= moveSpeed;
-        }
-        if (keys['ArrowLeft'] && paddlePositions.paddle2.z < limitZ) {
-            paddlePositions.paddle2.z += moveSpeed;
-        }
+    if (keys['ArrowRight'] && paddlePositions.paddle1.z < limitZ) {
+        paddlePositions.paddle1.z += moveSpeed;
     }
-    // Se isBotMode === true, a IA controla o paddle2 na função updateAI
 }
 
-// Função para controlar a IA do paddle2
-function updateAI() {
-    if (!isBotMode) return; // Sai se não for modo Bot
+// Renderização
+function render() {
+    // 1. Configurações de tela e câmera (Apenas uma vez no início)
+    gl.clearColor(0.1, 0.1, 0.1, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    setupCamera(currentCamera);
+
+    // 2. Lógica de Entrada (Teclado do Jogador)
+    handleMovement(); 
+
+    // --- LÓGICA DA IA ---
 
     // 1. Registrar a posição atual no histórico para criar o atraso (Latência)
     aiConfig.puckHistory.push(puckState.z);
@@ -437,9 +415,11 @@ function updateAI() {
     }
 
     // 2. Definir o alvo: A IA olha para onde o disco ESTAVA (atraso de reflexo)
+    // Se o histórico ainda não encheu, ela foca no centro (0)
     let delayedTargetZ = aiConfig.puckHistory[0] || 0;
 
     // 3. Só agir se o disco estiver no campo da IA (puckState.x > 0)
+    // Se estiver no seu campo, ela volta devagar para o centro (z=0)
     let finalTarget;
     if (puckState.x < 0) {
         finalTarget = 0; // Volta para o meio da baliza e espera
@@ -462,21 +442,8 @@ function updateAI() {
 
     // Limites físicos da mesa
     paddlePositions.paddle2.z = Math.max(-limitZ, Math.min(limitZ, paddlePositions.paddle2.z));
-}
 
-// Renderização
-function render() {
-    // 1. Configurações de tela e câmera (Apenas uma vez no início)
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
-    setupCamera(currentCamera);
-
-    // 2. Lógica de Entrada (Teclado do Jogador)
-    handleMovement(); 
-
-   // 3. Lógica da IA (se ativo)
-    updateAI();
+    // --- FIM DA LÓGICA DA IA ---
 
     // Limites da mesa
     paddlePositions.paddle2.z = Math.max(-limitZ, Math.min(limitZ, paddlePositions.paddle2.z));
@@ -532,17 +499,17 @@ window.addEventListener('resize', () => {
 // Iniciar aplicação
 window.onload = function() {
     if (!initWebGL()) return;
-    
+
     initShaders();
-    
+
     gl.viewport(0, 0, canvas.width, canvas.height);
-    
+
     projectionMatrix = new Matrix4();
     projectionMatrix.setPerspective(45, canvas.width / canvas.height, 0.1, 100);
     gl.uniformMatrix4fv(program.u_ProjectionMatrix, false, projectionMatrix.elements);
-    
+
     modelMatrix = new Matrix4();
     modelMatrix.setIdentity();
-    
+
     render();
 };
