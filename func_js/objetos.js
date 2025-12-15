@@ -378,7 +378,7 @@ function setupCamera(cameraIndex) {
             viewMatrix.setLookAt(-3.5, 12, 0, 0, 0, 0, 1, 0, 0);
             break;
         case 4: // Visão do Personagem (FPS - sem cabeça)
-            viewMatrix.setLookAt(-3.4, 2.2, 0, 0.5, 0, 0, 0, 1, 0);
+            viewMatrix.setLookAt(-4, 2.5, 0, 1.0, 0.3, 0, 0, 1, 0);
             break;
     }
     
@@ -387,7 +387,6 @@ function setupCamera(cameraIndex) {
 
 function handleMovement() {
     // Seta para Cima/Baixo ou Esquerda/Direita (depende da sua preferência de câmera)
-    // No seu caso, para mover lateralmente no gol:
     if (keys['ArrowLeft'] && paddlePositions.paddle1.z > -limitZ) {
         paddlePositions.paddle1.z -= moveSpeed;
     }
