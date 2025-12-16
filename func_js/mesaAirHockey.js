@@ -1,63 +1,54 @@
 // ========== MÓDULO DA MESA DE AIR HOCKEY ==========
 
-// Função para criar um cilindro (para círculo central e pernas da mesa)
 function createCylinder(r, g, b, segments = 16) {
     const vertices = [];
     const colors = [];
+    const normals = []; 
 
-    // Tampa superior
     for (let i = 0; i < segments; i++) {
         const angle1 = (i / segments) * Math.PI * 2;
         const angle2 = ((i + 1) / segments) * Math.PI * 2;
-        
         vertices.push(0, 0.5, 0);
         vertices.push(Math.cos(angle1) * 0.5, 0.5, Math.sin(angle1) * 0.5);
         vertices.push(Math.cos(angle2) * 0.5, 0.5, Math.sin(angle2) * 0.5);
+        normals.push(0, 1, 0,  0, 1, 0,  0, 1, 0);
     }
-
-    // Tampa inferior
     for (let i = 0; i < segments; i++) {
         const angle1 = (i / segments) * Math.PI * 2;
         const angle2 = ((i + 1) / segments) * Math.PI * 2;
-        
         vertices.push(0, -0.5, 0);
         vertices.push(Math.cos(angle2) * 0.5, -0.5, Math.sin(angle2) * 0.5);
         vertices.push(Math.cos(angle1) * 0.5, -0.5, Math.sin(angle1) * 0.5);
+        normals.push(0, -1, 0,  0, -1, 0,  0, -1, 0);
     }
-
-    // Lados
     for (let i = 0; i < segments; i++) {
         const angle1 = (i / segments) * Math.PI * 2;
         const angle2 = ((i + 1) / segments) * Math.PI * 2;
-        
         const x1 = Math.cos(angle1) * 0.5;
         const z1 = Math.sin(angle1) * 0.5;
         const x2 = Math.cos(angle2) * 0.5;
         const z2 = Math.sin(angle2) * 0.5;
-
         vertices.push(x1, 0.5, z1);
         vertices.push(x1, -0.5, z1);
         vertices.push(x2, -0.5, z2);
-
         vertices.push(x1, 0.5, z1);
         vertices.push(x2, -0.5, z2);
         vertices.push(x2, 0.5, z2);
+        normals.push(x1, 0, z1,  x1, 0, z1,  x2, 0, z2);
+        normals.push(x1, 0, z1,  x2, 0, z2,  x2, 0, z2);
     }
-
-    // Adicionar cores
     const totalVertices = vertices.length / 3;
     for (let i = 0; i < totalVertices; i++) {
         colors.push(r, g, b);
     }
-
     return {
         vertices: new Float32Array(vertices),
         colors: new Float32Array(colors),
+        normals: new Float32Array(normals),
         count: totalVertices
     };
 }
 
-// Função para desenhar um cilindro
 function drawCylinder(cylinder, matrix, gl, program) {
     const vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -71,16 +62,79 @@ function drawCylinder(cylinder, matrix, gl, program) {
     gl.vertexAttribPointer(program.a_Color, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(program.a_Color);
 
+    if (cylinder.normals && program.a_Normal !== -1) {
+        const normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, cylinder.normals, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(program.a_Normal, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(program.a_Normal);
+    }
     gl.uniformMatrix4fv(program.u_ModelMatrix, false, matrix.elements);
     gl.drawArrays(gl.TRIANGLES, 0, cylinder.count);
 }
 
-// Desenhar a mesa de air hockey
-export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
+export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program, currentCamera = 0) {
     const tempMatrix = new Matrix4();
     tempMatrix.setIdentity();
 
-    // Superfície da mesa (azul claro com bordas)
+    // 1. O QUARTO
+    const roomMatrix = new Matrix4();
+    roomMatrix.setIdentity();
+    roomMatrix.translate(0, 4.0, 0);
+    roomMatrix.scale(40.0, 30.0, 40.0); 
+    const roomCube = createCube(0.6, 0.6, 0.6); 
+    if (roomCube.normals) {
+        for(let i = 0; i < roomCube.normals.length; i++) roomCube.normals[i] = -roomCube.normals[i];
+    }
+    drawCube(roomCube, roomMatrix);
+
+    // ===========================================
+    // 2. ABAJURES DE CHÃO (PONTAS - EIXO X)
+    // ===========================================
+    
+    if (currentCamera !== 3) { // Esconde na visão de cima (tecla 4)
+        
+        // --- LADO ESQUERDO (X Negativo) ---
+        // Base
+        const post1Matrix = new Matrix4();
+        post1Matrix.setIdentity();
+        post1Matrix.translate(0.0, 3.0, -3.0); 
+        post1Matrix.scale(0.2, 2.0, 0.2);
+        const post = createCube(0.2, 0.2, 0.2); 
+        drawCube(post, post1Matrix);
+
+        // Luz (Cabeça)
+        const lamp1Matrix = new Matrix4();
+        lamp1Matrix.setIdentity();
+        lamp1Matrix.translate(0.0, 2.0, -3.0); 
+        // Rotaciona no eixo Z para apontar para o centro
+        lamp1Matrix.rotate(-45, 0, 0, 1); 
+        lamp1Matrix.scale(0.4, 0.4, 0.4);
+        const lamp1 = createCube(1.0, 1.0, 0.8); // Luz Quente
+        drawCube(lamp1, lamp1Matrix);
+
+        // --- LADO DIREITO (X Positivo) ---
+        // Base
+        const post2Matrix = new Matrix4();
+        post2Matrix.setIdentity();
+        post2Matrix.translate(0.0, 3.0, 3.0); 
+        post2Matrix.scale(0.2, 2.0, 0.2);
+        drawCube(post, post2Matrix);
+
+        // Luz (Cabeça)
+        const lamp2Matrix = new Matrix4();
+        lamp2Matrix.setIdentity();
+        lamp2Matrix.translate(0.0, 2.0, 3.0);
+        // Rotaciona no eixo Z (sentido oposto)
+        lamp2Matrix.rotate(45, 0, 0, 1); 
+        lamp2Matrix.scale(0.4, 0.4, 0.4);
+        const lamp2 = createCube(0.8, 0.9, 1.0); // Luz Fria
+        drawCube(lamp2, lamp2Matrix);
+    }
+
+    // ===========================================
+    // 3. A MESA
+    // ===========================================
     const tableTopMatrix = new Matrix4();
     tableTopMatrix.set(tempMatrix);
     tableTopMatrix.translate(0, 0, 0);
@@ -88,7 +142,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const tableTop = createCube(0.2, 0.4, 0.8);
     drawCube(tableTop, tableTopMatrix);
 
-    // Área de jogo (azul escuro - superfície interna)
     const playAreaMatrix = new Matrix4();
     playAreaMatrix.set(tempMatrix);
     playAreaMatrix.translate(0, 0.06, 0);
@@ -96,7 +149,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const playArea = createCube(0.1, 0.2, 0.5);
     drawCube(playArea, playAreaMatrix);
 
-    // Linha central (branca)
     const centerLineMatrix = new Matrix4();
     centerLineMatrix.set(tempMatrix);
     centerLineMatrix.translate(0, 0.08, 0);
@@ -104,7 +156,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const centerLine = createCube(1.0, 1.0, 1.0);
     drawCube(centerLine, centerLineMatrix);
 
-    // Círculo central (branco)
     const centerCircleMatrix = new Matrix4();
     centerCircleMatrix.set(tempMatrix);
     centerCircleMatrix.translate(0, 0.08, 0);
@@ -112,7 +163,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const centerCircle = createCylinder(1.0, 1.0, 1.0, 32);
     drawCylinder(centerCircle, centerCircleMatrix, gl, program);
 
-    // Gol esquerdo (vermelho)
     const leftGoalBackMatrix = new Matrix4();
     leftGoalBackMatrix.set(tempMatrix);
     leftGoalBackMatrix.translate(-1.95, 0.1, 0);
@@ -127,7 +177,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const leftGoalTop = createCube(0.8, 0.1, 0.1);
     drawCube(leftGoalTop, leftGoalTopMatrix);
 
-    // Gol direito (vermelho)
     const rightGoalBackMatrix = new Matrix4();
     rightGoalBackMatrix.set(tempMatrix);
     rightGoalBackMatrix.translate(1.95, 0.1, 0);
@@ -142,7 +191,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const rightGoalTop = createCube(0.8, 0.1, 0.1);
     drawCube(rightGoalTop, rightGoalTopMatrix);
 
-    // Bordas laterais (brancas)
     const topBorderMatrix = new Matrix4();
     topBorderMatrix.set(tempMatrix);
     topBorderMatrix.translate(0, 0.1, 1.15);
@@ -157,7 +205,6 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const bottomBorder = createCube(0.9, 0.9, 0.9);
     drawCube(bottomBorder, bottomBorderMatrix);
 
-    // Bordas dos lados (brancas)
     const leftBorderTop = new Matrix4();
     leftBorderTop.set(tempMatrix);
     leftBorderTop.translate(-1.9, 0.1, 0.70);
@@ -186,16 +233,11 @@ export function drawAirHockeyTable(Matrix4, createCube, drawCube, gl, program) {
     const rightBorderBottomCube = createCube(0.9, 0.9, 0.9);
     drawCube(rightBorderBottomCube, rightBorderBottom);
 
-    // Pernas da mesa (4 cilindros marrons)
     const legPositions = [
-        [-1.6, -0.45, 1.0],
-        [1.6, -0.45, 1.0],
-        [-1.6, -0.45, -1.0],
-        [1.6, -0.45, -1.0]
+        [-1.6, -0.45, 1.0], [1.6, -0.45, 1.0],
+        [-1.6, -0.45, -1.0], [1.6, -0.45, -1.0]
     ];
-
     const leg = createCylinder(0.4, 0.3, 0.2, 16);
-    
     for (let pos of legPositions) {
         const legMatrix = new Matrix4();
         legMatrix.set(tempMatrix);

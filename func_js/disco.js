@@ -2,141 +2,36 @@
 
 let currentBaseSpeed = 0.03; 
 
-// Variáveis do disco (puck)
 export let puckState = {
     x: 0,
     z: 0,
     velocityX: 0.03,
     velocityZ: 0.03,
-    scaledRadius: 0.15, // raio do disco após escala (0.05 * 3)
-
-    // Sistema de delay
+    scaledRadius: 0.15,
     isPaused: false,
     pauseTimeRemaining: 0,
     nextVelocityX: 0,
     nextVelocityZ: 0,
-
-    // Sistema de pausa
     isGamePaused: false,
     savedVelocityX: 0,
     savedVelocityZ: 0,
-
-    // Limites da mesa
     tableMinX: -1.8,
     tableMaxX: 1.8,
     tableMinZ: -1.1,
     tableMaxZ: 1.1
 };
 
-// Sistema de pontuação
-export let scoreState = {
-    player1: 0, 
-    player2: 0  
-};
-
-// --- NOVA FUNÇÃO PARA CONTROLAR VELOCIDADE ---
-export function setPuckSpeed(modeIndex) {
-    const velLabel = document.getElementById('disco_vel-name');
-    let newSpeed = 0.03;
-    let labelText = "Normal";
-
-    // 1. Define a nova velocidade base
-    switch(modeIndex) {
-        case 1: // Lenta (tecla 1 ou 7)
-            newSpeed = 0.015;
-            labelText = "Velocidade Lenta";
-            break;
-        case 2: // Normal (tecla 2 ou 8)
-            newSpeed = 0.03;
-            labelText = "Velocidade Normal";
-            break;
-        case 3: // Rápida (tecla 3 ou 9)
-            newSpeed = 0.05; // Aumentei um pouco para ser perceptível
-            labelText = "Velocidade Rápida";
-            break;
-        default:
-            return; // Se não for um índice válido, sai
-    }
-
-    // 2. Atualiza o texto na tela
-    if (velLabel) {
-        velLabel.textContent = labelText;
-    }
-
-    // 3. Atualiza a variável global de velocidade
-    currentBaseSpeed = newSpeed;
-
-    // 4. Aplica a mudança IMEDIATAMENTE se o disco estiver em movimento
-    // Isso evita ter que esperar o próximo reset para a velocidade mudar
-    if (!puckState.isPaused && !puckState.isGamePaused) {
-        // Calcula a direção atual (normaliza o vetor)
-        const currentMag = Math.sqrt(puckState.velocityX * puckState.velocityX + puckState.velocityZ * puckState.velocityZ);
-        
-        if (currentMag > 0.0001) { // Evita divisão por zero
-            // Mantém a direção, mas aplica a nova magnitude
-            puckState.velocityX = (puckState.velocityX / currentMag) * currentBaseSpeed;
-            puckState.velocityZ = (puckState.velocityZ / currentMag) * currentBaseSpeed;
-        }
-    } 
-    // Se estiver pausado (contagem regressiva), atualiza a próxima velocidade
-    else if (puckState.isPaused) {
-        const nextMag = Math.sqrt(puckState.nextVelocityX * puckState.nextVelocityX + puckState.nextVelocityZ * puckState.nextVelocityZ);
-        if (nextMag > 0.0001) {
-             puckState.nextVelocityX = (puckState.nextVelocityX / nextMag) * currentBaseSpeed;
-             puckState.nextVelocityZ = (puckState.nextVelocityZ / nextMag) * currentBaseSpeed;
-        }
-    }
-}
-
-// --- FUNÇÃO PARA CONTROLAR DIFICULDADE DO BOT ---
-export function setBotDifficulty(difficultyIndex, aiConfig) {
-    const diffLabel = document.getElementById('difficulty-name');
-    let labelText = "Médio";
-
-    // Configura os parâmetros da IA baseado na dificuldade
-    switch(difficultyIndex) {
-        case 1: // Fácil (tecla 4)
-            aiConfig.speed = 0.015;           // Bot mais lento
-            aiConfig.errorRange = 0.8;         // Erra mais
-            aiConfig.latencyFrames = 20;       // Reação mais lenta
-            labelText = "Dificuldade Fácil";
-            break;
-        case 2: // Médio (tecla 5)
-            aiConfig.speed = 0.025;            // Velocidade média
-            aiConfig.errorRange = 0.4;         // Erro moderado
-            aiConfig.latencyFrames = 12;       // Reação moderada
-            labelText = "Dificuldade Média";
-            break;
-        case 3: // Difícil (tecla 6)
-            aiConfig.speed = 0.04;             // Bot mais rápido
-            aiConfig.errorRange = 0.15;        // Quase não erra
-            aiConfig.latencyFrames = 5;        // Reação rápida
-            labelText = "Dificuldade Difícil";
-            break;
-        default:
-            return; // Se não for um índice válido, sai
-    }
-
-    // Atualiza o texto na tela
-    if (diffLabel) {
-        diffLabel.textContent = labelText;
-    }
-}
+export let scoreState = { player1: 0, player2: 0 };
 
 export function resetPuck() {
     puckState.x = 0;
     puckState.z = 0;
     puckState.velocityX = 0;
     puckState.velocityZ = 0;
-
-    // Pausar por 1 segundo (60 frames aprox)
     puckState.isPaused = true;
     puckState.pauseTimeRemaining = 60;
 
-    // Guardar a direção aleatória para quando o timer acabar
     const angle = (Math.random() - 0.5) * Math.PI / 2;
-    
-    // AQUI ESTÁ A MUDANÇA IMPORTANTE: Usamos currentBaseSpeed em vez de valor fixo
     const speed = currentBaseSpeed; 
     
     puckState.nextVelocityX = Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1);
@@ -152,12 +47,10 @@ export function resetGame() {
 
 export function togglePause() {
     if (puckState.isGamePaused) {
-        // Despausar
         puckState.velocityX = puckState.savedVelocityX;
         puckState.velocityZ = puckState.savedVelocityZ;
         puckState.isGamePaused = false;
     } else {
-        // Pausar
         puckState.savedVelocityX = puckState.velocityX;
         puckState.savedVelocityZ = puckState.velocityZ;
         puckState.velocityX = 0;
@@ -166,23 +59,14 @@ export function togglePause() {
     }
 }
 
-// Atualizar o placar na tela
 function updateScoreDisplay() {
     const scorePlayer1 = document.getElementById('score-player1');
     const scorePlayer2 = document.getElementById('score-player2');
-
-    if (scorePlayer1) {
-        scorePlayer1.textContent = scoreState.player1;
-    }
-    if (scorePlayer2) {
-        scorePlayer2.textContent = scoreState.player2;
-    }
-
-    // Verificar vitória
+    if (scorePlayer1) scorePlayer1.textContent = scoreState.player1;
+    if (scorePlayer2) scorePlayer2.textContent = scoreState.player2;
     checkWinCondition();
 }
 
-// Verificar condição de vitória
 function checkWinCondition() {
     const urlParams = new URLSearchParams(window.location.search);
     const maxScore = parseInt(urlParams.get('maxScore')) || 5;
@@ -191,7 +75,7 @@ function checkWinCondition() {
     const player1Name = urlParams.get('player1') || 'Jogador 1';
     const player2Name = urlParams.get('player2') || (isBotMode ? 'Bot' : 'Jogador 2');
 
-    if (maxScore === 999) return; // Sem limite
+    if (maxScore === 999) return; 
 
     if (scoreState.player1 >= maxScore) {
         setTimeout(() => {
@@ -206,98 +90,84 @@ function checkWinCondition() {
     }
 }
 
-// Função para criar os vértices de um cilindro 3D
-function createCylinderVertices(radius, height, segments) {
+// --- GERAÇÃO DO DISCO COM NORMAIS ---
+function createPuckData(radius, height, segments, r, g, b) {
     let vertices = [];
-    let h = height / 2;
-    
-    for (let i = 0; i < segments; i++) {
-        let angle1 = (i / segments) * Math.PI * 2;
-        let angle2 = ((i + 1) / segments) * Math.PI * 2;
-        
-        let x1 = Math.cos(angle1) * radius;
-        let z1 = Math.sin(angle1) * radius;
-        let x2 = Math.cos(angle2) * radius;
-        let z2 = Math.sin(angle2) * radius;
-        
-        // Tampa superior
-        vertices.push(0, h, 0);
-        vertices.push(x2, h, z2);
-        vertices.push(x1, h, z1);
-        
-        // Tampa inferior
-        vertices.push(0, -h, 0);
-        vertices.push(x1, -h, z1);
-        vertices.push(x2, -h, z2);
-        
-        // Laterais
-        vertices.push(x1, h, z1);
-        vertices.push(x2, h, z2);
-        vertices.push(x1, -h, z1);
-        
-        vertices.push(x1, -h, z1);
-        vertices.push(x2, h, z2);
-        vertices.push(x2, -h, z2);
-    }
-    
-    return vertices;
-}
-
-// Função para criar cores cilíndricas
-function createCylindricColors(baseColor, handleColor, segments) {
+    let normals = [];
     let colors = [];
-    let baseVertices = segments * 12;
-    
-    // Cor da base
-    for (let i = 0; i < baseVertices; i++) {
-        colors.push(baseColor[0], baseColor[1], baseColor[2]);
+    let h = height / 2;
+
+    // Função para adicionar triângulo
+    function addTri(v1, v2, v3, n1, n2, n3) {
+        vertices.push(...v1, ...v2, ...v3);
+        normals.push(...n1, ...n2, ...n3);
+        colors.push(r,g,b, r,g,b, r,g,b);
     }
-    
-    return new Float32Array(colors);
-}
 
-// Função para criar vértices cilíndricos
-function createCylindricVertices(baseRadius, baseHeight, handleRadius, handleHeight, segments) {
-    let vertices = [];
-    
-    // Criar base (cilindro largo)
-    let baseCylinder = createCylinderVertices(baseRadius, baseHeight, segments);
-    for (let i = 0; i < baseCylinder.length; i++) {
-        vertices.push(baseCylinder[i]);
+    for (let i = 0; i < segments; i++) {
+        let a1 = (i / segments) * Math.PI * 2;
+        let a2 = ((i + 1) / segments) * Math.PI * 2;
+        
+        let x1 = Math.cos(a1) * radius;
+        let z1 = Math.sin(a1) * radius;
+        let x2 = Math.cos(a2) * radius;
+        let z2 = Math.sin(a2) * radius;
+
+        // Topo (Normal 0,1,0)
+        addTri(
+            [0, h, 0], [x2, h, z2], [x1, h, z1],
+            [0,1,0], [0,1,0], [0,1,0]
+        );
+
+        // Fundo (Normal 0,-1,0)
+        addTri(
+            [0, -h, 0], [x1, -h, z1], [x2, -h, z2],
+            [0,-1,0], [0,-1,0], [0,-1,0]
+        );
+
+        // Lateral
+        // Normais laterais apontam para fora (x, 0, z)
+        let n1 = [x1, 0, z1]; 
+        let n2 = [x2, 0, z2];
+
+        // Triangulo 1 Lateral
+        addTri(
+            [x1, h, z1], [x2, h, z2], [x1, -h, z1],
+            n1, n2, n1
+        );
+        // Triangulo 2 Lateral
+        addTri(
+            [x1, -h, z1], [x2, h, z2], [x2, -h, z2],
+            n1, n2, n2
+        );
     }
-    
-    return new Float32Array(vertices);
+
+    return {
+        vertices: new Float32Array(vertices),
+        normals: new Float32Array(normals),
+        colors: new Float32Array(colors)
+    };
 }
 
-// Função para criar o disco
-function createPuck(radius, height, segments, r, g, b) {
-    const vertices = createCylindricVertices(radius, height, 0, 0, segments);
-    const colors = createCylindricColors([r, g, b], [r, g, b], segments);
-    return { vertices, colors };
-}
-
-// Função para desenhar o disco
 export function drawPuck(Matrix4, animationAngle, drawCylindricObject) {
     const tempMatrix = new Matrix4();
     tempMatrix.setIdentity();
     
-    const disco = createPuck(0.05, 0.02, 24, 0, 1, 0);
+    // Cria o disco verde com normais corretas
+    const disco = createPuckData(0.05, 0.02, 32, 0.0, 1.0, 0.0);
     
     const discoMatrix = new Matrix4();
     discoMatrix.set(tempMatrix);
     discoMatrix.translate(puckState.x, 0.1, puckState.z);
     discoMatrix.rotate(animationAngle * 100, 0, 1, 0);
     discoMatrix.scale(3, 3, 3);
+    
     drawCylindricObject(disco, discoMatrix);
 }
 
-// Atualizar física do disco
 export function updatePuckPhysics(paddlePositions = null) {
-    if (puckState.isGamePaused) {
-        return;
-    }
+    if (puckState.isGamePaused) return;
 
-    // countdown após gol
     if (puckState.isPaused) {
         puckState.pauseTimeRemaining--;
         if (puckState.pauseTimeRemaining <= 0) {
@@ -308,93 +178,68 @@ export function updatePuckPhysics(paddlePositions = null) {
         return;
     }
 
-    // Atualizar posição
     puckState.x += puckState.velocityX;
     puckState.z += puckState.velocityZ;
 
-    // Definir área do gol (centro da mesa)
     const goalZoneSize = 0.4;
 
-    // Verificar colisão com bordas laterais (esquerda/direita) e GOLS
     if (puckState.x - puckState.scaledRadius <= puckState.tableMinX) {
-        // Verificar se está na área do gol
         if (Math.abs(puckState.z) <= goalZoneSize) {
-            // Jogador 2 marcou
             scoreState.player2++;
             updateScoreDisplay();
             resetPuck();
         } else {
-            // Apenas rebate na borda
             puckState.x = puckState.tableMinX + puckState.scaledRadius;
-            puckState.velocityX = Math.abs(puckState.velocityX); // Inverte para direita
+            puckState.velocityX = Math.abs(puckState.velocityX); 
         }
     } else if (puckState.x + puckState.scaledRadius >= puckState.tableMaxX) {
-        // Verificar se está na área do gol
         if (Math.abs(puckState.z) <= goalZoneSize) {
-            // Jogador 1 marcou
             scoreState.player1++;
             updateScoreDisplay();
             resetPuck();
         } else {
-            // Apenas rebate na borda
             puckState.x = puckState.tableMaxX - puckState.scaledRadius;
-            puckState.velocityX = -Math.abs(puckState.velocityX); // Inverte para esquerda
+            puckState.velocityX = -Math.abs(puckState.velocityX); 
         }
     }
 
-    // Verificar colisão com bordas superior/inferior
     if (puckState.z - puckState.scaledRadius <= puckState.tableMinZ) {
         puckState.z = puckState.tableMinZ + puckState.scaledRadius;
-        puckState.velocityZ = Math.abs(puckState.velocityZ); // Inverte para cima
+        puckState.velocityZ = Math.abs(puckState.velocityZ); 
     } else if (puckState.z + puckState.scaledRadius >= puckState.tableMaxZ) {
         puckState.z = puckState.tableMaxZ - puckState.scaledRadius;
-        puckState.velocityZ = -Math.abs(puckState.velocityZ); // Inverte para baixo
+        puckState.velocityZ = -Math.abs(puckState.velocityZ); 
     }
 
-    // Verificar colisão com os bastões (se fornecidos)
     if (paddlePositions) {
-        // Colisão com bastão 1
         const dx1 = puckState.x - paddlePositions.paddle1.x;
         const dz1 = puckState.z - paddlePositions.paddle1.z;
         const distance1 = Math.sqrt(dx1 * dx1 + dz1 * dz1);
         const minDistance1 = puckState.scaledRadius + paddlePositions.radius;
 
         if (distance1 < minDistance1) {
-            // Normalizar o vetor de colisão
-            const  nx = dx1 / distance1;
+            const nx = dx1 / distance1;
             const nz = dz1 / distance1;
-            
-            // Separar o disco do bastão
             puckState.x = paddlePositions.paddle1.x + nx * minDistance1;
             puckState.z = paddlePositions.paddle1.z + nz * minDistance1;
-            
-            // Calcular a reflexão da velocidade
             const dotProduct = puckState.velocityX * nx + puckState.velocityZ * nz;
             puckState.velocityX -= 2 * dotProduct * nx;
             puckState.velocityZ -= 2 * dotProduct * nz;
-            
         }
 
-        // Colisão com bastão 2
         const dx2 = puckState.x - paddlePositions.paddle2.x;
         const dz2 = puckState.z - paddlePositions.paddle2.z;
         const distance2 = Math.sqrt(dx2 * dx2 + dz2 * dz2);
         const minDistance2 = puckState.scaledRadius + paddlePositions.radius;
 
         if (distance2 < minDistance2) {
-            // Normalizar o vetor de colisão
             const nx = dx2 / distance2;
             const nz = dz2 / distance2;
-            
-            // Separar o disco do bastão
             puckState.x = paddlePositions.paddle2.x + nx * minDistance2;
             puckState.z = paddlePositions.paddle2.z + nz * minDistance2;
-            
-            // Calcular a reflexão da velocidade
             const dotProduct = puckState.velocityX * nx + puckState.velocityZ * nz;
             puckState.velocityX -= 2 * dotProduct * nx;
             puckState.velocityZ -= 2 * dotProduct * nz;
-            
         }
     }
 }
