@@ -28,6 +28,14 @@ let keys = {};
 const moveSpeed = 0.06;
 const limitZ = 0.9; // Limite lateral da mesa
 
+// Jogador 1 (lado esquerdo)
+const p1MinX = -1.7;   // fundo do lado esquerdo
+const p1MaxX = -1.2;  // NUNCA passa do meio
+
+// Jogador 2 (lado direito)
+const p2MinX = 1.2;   // NUNCA passa do meio
+const p2MaxX = 1.7;   // fundo do lado direito
+
 // IA
 const aiConfig = {
     speed: 0.025,
@@ -403,6 +411,15 @@ function handleMovement() {
         if ((keys['d'] || keys['ArrowRight']) && paddlePositions.paddle1.z < limitZ) {
             paddlePositions.paddle1.z += moveSpeed;
         }
+
+        if ((keys['s'] || keys['ArrowDown']) && paddlePositions.paddle1.x > p1MinX) {
+            paddlePositions.paddle1.x -= moveSpeed;
+        }
+
+        if ((keys['w'] || keys['ArrowUp']) && paddlePositions.paddle1.x < p1MaxX) {
+            paddlePositions.paddle1.x += moveSpeed;
+        }
+
     } else {
         // Modo 1x1: Player 1 usa apenas WASD
         if (keys['a'] && paddlePositions.paddle1.z > -limitZ) {
@@ -411,8 +428,13 @@ function handleMovement() {
         if (keys['d'] && paddlePositions.paddle1.z < limitZ) {
             paddlePositions.paddle1.z += moveSpeed;
         }
+        if (keys['s'] && paddlePositions.paddle1.x > p1MinX) {
+            paddlePositions.paddle1.x -= moveSpeed;
+        }
+        if (keys['w'] && paddlePositions.paddle1.x < p1MaxX) {
+            paddlePositions.paddle1.x += moveSpeed;
+        }
     }
-
     // ========== PLAYER 2 (Setas) - Só no modo 1x1 ==========
     if (!isBotMode) {
         // Modo 1x1: Player 2 usa apenas as Setas
@@ -422,9 +444,16 @@ function handleMovement() {
         if (keys['ArrowLeft'] && paddlePositions.paddle2.z < limitZ) {
             paddlePositions.paddle2.z += moveSpeed;
         }
+        if (keys['ArrowUp'] && paddlePositions.paddle2.x > p2MinX) {
+            paddlePositions.paddle2.x -= moveSpeed;
+        }
+        if (keys['ArrowDown'] && paddlePositions.paddle2.x < p2MaxX) {
+            paddlePositions.paddle2.x += moveSpeed;
+        }
     }
     // Se isBotMode === true, a IA controla o paddle2 na função updateAI
 }
+
 
 // Função para controlar a IA do paddle2
 function updateAI() {
