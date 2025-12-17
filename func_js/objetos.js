@@ -25,6 +25,14 @@ let keys = {};
 const moveSpeed = 0.06;
 const limitZ = 0.9; 
 
+// Jogador 1 (lado esquerdo)
+const p1MinX = -1.7;   // fundo do lado esquerdo
+const p1MaxX = -1.2;  // NUNCA passa do meio
+
+// Jogador 2 (lado direito)
+const p2MinX = 1.2;   // NUNCA passa do meio
+const p2MaxX = 1.7;   // fundo do lado direito
+
 // IA
 const aiConfig = {
     speed: 0.025,
@@ -345,33 +353,64 @@ function setupCamera(cameraIndex) {
 }
 
 function handleMovement() {
+    // ========== PLAYER 1 - Sempre ativo ==========
     if (isBotMode) {
+        // Modo 1xBot: Player 1 pode usar WASD OU Setas
         if ((keys['a'] || keys['ArrowLeft']) && paddlePositions.paddle1.z > -limitZ) {
             paddlePositions.paddle1.z -= moveSpeed;
         }
         if ((keys['d'] || keys['ArrowRight']) && paddlePositions.paddle1.z < limitZ) {
             paddlePositions.paddle1.z += moveSpeed;
         }
+
+        if ((keys['s'] || keys['ArrowDown']) && paddlePositions.paddle1.x > p1MinX) {
+            paddlePositions.paddle1.x -= moveSpeed;
+        }
+
+        if ((keys['w'] || keys['ArrowUp']) && paddlePositions.paddle1.x < p1MaxX) {
+            paddlePositions.paddle1.x += moveSpeed;
+        }
+
     } else {
+        // Modo 1x1: Player 1 usa apenas WASD
         if (keys['a'] && paddlePositions.paddle1.z > -limitZ) {
             paddlePositions.paddle1.z -= moveSpeed;
         }
         if (keys['d'] && paddlePositions.paddle1.z < limitZ) {
             paddlePositions.paddle1.z += moveSpeed;
         }
+        if (keys['s'] && paddlePositions.paddle1.x > p1MinX) {
+            paddlePositions.paddle1.x -= moveSpeed;
+        }
+        if (keys['w'] && paddlePositions.paddle1.x < p1MaxX) {
+            paddlePositions.paddle1.x += moveSpeed;
+        }
     }
+    // ========== PLAYER 2 (Setas) - Só no modo 1x1 ==========
     if (!isBotMode) {
+        // Modo 1x1: Player 2 usa apenas as Setas
         if (keys['ArrowRight'] && paddlePositions.paddle2.z > -limitZ) {
             paddlePositions.paddle2.z -= moveSpeed;
         }
         if (keys['ArrowLeft'] && paddlePositions.paddle2.z < limitZ) {
             paddlePositions.paddle2.z += moveSpeed;
         }
+        if (keys['ArrowUp'] && paddlePositions.paddle2.x > p2MinX) {
+            paddlePositions.paddle2.x -= moveSpeed;
+        }
+        if (keys['ArrowDown'] && paddlePositions.paddle2.x < p2MaxX) {
+            paddlePositions.paddle2.x += moveSpeed;
+        }
     }
+    // Se isBotMode === true, a IA controla o paddle2 na função updateAI
 }
 
+
+// Função para controlar a IA do paddle2
 function updateAI() {
-    if (!isBotMode) return;
+    if (!isBotMode) return; // Sai se não for modo Bot
+
+    // 1. Registrar a posição atual no histórico para criar o atraso (Latência)
     aiConfig.puckHistory.push(puckState.z);
     if (aiConfig.puckHistory.length > aiConfig.latencyFrames) {
         aiConfig.puckHistory.shift();
